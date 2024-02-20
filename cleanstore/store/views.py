@@ -1,7 +1,8 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from .models import Item, Order
 from .serializers import ItemSerializer, OrderSerializer
+
 
 class HomeViewSet(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]  # Allow access to all users
@@ -36,3 +37,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         if request.user.is_staff:
             return Response({"error": "Admins cannot make orders for customers."}, status=status.HTTP_403_FORBIDDEN)
         return super().create(request, *args, **kwargs)
+
+
+class OrderCreateView(generics.CreateAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user.customer)

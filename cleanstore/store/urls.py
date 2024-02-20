@@ -1,13 +1,9 @@
-from django.urls import path, include
-from rest_framework import routers
-from .views import HomeViewSet, DashboardViewSet, ItemViewSet, OrderViewSet
-
-router = routers.DefaultRouter()
-router.register(r'items', ItemViewSet)
-router.register(r'orders', OrderViewSet)
+from django.urls import path
+from .views import HomeViewSet, DashboardViewSet, ItemViewSet, OrderCreateView
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('home/', HomeViewSet.as_view({'get': 'list'}), name='home'),
+    path('', HomeViewSet.as_view({'get': 'list'}), name='home'),
     path('dashboard/', DashboardViewSet.as_view({'get': 'list'}), name='dashboard'),
+    path('items/', ItemViewSet.as_view({'get': 'list', 'post': 'create'}), name='item-list-create'),
+    path('orders/create/', OrderCreateView.as_view(), name='order-create'),  # Endpoint for creating orders
 ]
