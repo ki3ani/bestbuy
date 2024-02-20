@@ -5,12 +5,21 @@ from .forms import OrderForm
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 def home(request):
     # Your homepage view logic
     return render(request, 'home.html')
 
+
+def is_staff(user):
+    return user.is_staff
+
+@login_required
+@user_passes_test(is_staff)
+def admin_dashboard(request):
+    orders = Order.objects.all()
+    return render(request, 'store/admin_dashboard.html', {'orders': orders})
 
 
 @login_required
@@ -43,3 +52,4 @@ class OrderDeleteView(LoginRequiredMixin, DeleteView):
     model = Order
     template_name = 'store/order_confirm_delete.html'
     success_url = reverse_lazy('dashboard')
+
