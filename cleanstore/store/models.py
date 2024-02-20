@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
-from django.urls import reverse
 
 class Item(models.Model):
     name = models.CharField(max_length=255)

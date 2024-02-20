@@ -1,13 +1,13 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework import routers
+from .views import HomeViewSet, DashboardViewSet, ItemViewSet, OrderViewSet
 
+router = routers.DefaultRouter()
+router.register(r'items', ItemViewSet)
+router.register(r'orders', OrderViewSet)
 
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('', views.home, name='home'),
-    path('<int:pk>/', views.OrderDetailView.as_view(), name='order-detail'),
-    path('<int:pk>/edit/', views.OrderUpdateView.as_view(), name='order-edit'),
-    path('<int:pk>/delete/', views.OrderDeleteView.as_view(), name='order-delete'),
-    path('items/<int:item_id>/', views.item_detail, name='item_detail'),
-    path('create_order/<int:item_id>/', views.create_order, name='create_order'),
+    path('', include(router.urls)),
+    path('home/', HomeViewSet.as_view({'get': 'list'}), name='home'),
+    path('dashboard/', DashboardViewSet.as_view({'get': 'list'}), name='dashboard'),
 ]

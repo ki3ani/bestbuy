@@ -1,66 +1,38 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
 from .models import Item, Order
-from .forms import OrderForm
-from django.urls import reverse_lazy
-from django.views.generic import DetailView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .serializers import ItemSerializer, OrderSerializer
 
-# Home view: Lists all in-stock items for anyone to view
-def home(request):
-    items = Item.objects.filter(in_stock=True)
-    return render(request, 'home.html', {'items': items})
+class HomeViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.AllowAny]  # Allow access to all users
 
-# Item detail view: Shows details of a single item
-def item_detail(request, item_id):
-    item = get_object_or_404(Item, pk=item_id)
-    return render(request, 'store/item_detail.html', {'item': item})
+    def list(self, request):
+        # Query items to display on the home page
+        items = Item.objects.filter(in_stock=True)
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
 
-# Customer dashboard: Shows a logged-in user's orders and allows order creation
-@login_required
-def dashboard(request):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.customer = request.user.customer
-            order.save()
-            return redirect('dashboard')
-    else:
-        form = OrderForm()
-    orders = request.user.customer.orders.all()
-    return render(request, 'store/dashboard.html', {'orders': orders, 'form': form})
+class DashboardViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only
 
-# Order detail view: Allows viewing details of a specific order
-class OrderDetailView(LoginRequiredMixin, DetailView):
-    model = Order
-    template_name = 'order_detail.html'
-    context_object_name = 'order'
+    def list(self, request):
+        # Query orders for the logged-in user
+        orders = Order.objects.filter(customer=request.user.customer)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
 
-# Order update view: Allows editing an existing order
-class OrderUpdateView(LoginRequiredMixin, UpdateView):
-    model = Order
-    form_class = OrderForm
-    template_name = 'order_form.html'
-    success_url = reverse_lazy('dashboard')
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Add authentication to ItemViewSet
 
-# Order delete view: Allows deleting an existing order
-class OrderDeleteView(LoginRequiredMixin, DeleteView):
-    model = Order
-    template_name = 'order_confirm_delete.html'
-    success_url = reverse_lazy('dashboard')
 
-@login_required
-def create_order(request, item_id):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.customer = request.user.customer  # Assuming a Customer model related to User
-            order.item = Item.objects.get(pk=item_id)  # Set the item based on passed item_id
-            order.save()
-            return redirect('dashboard')
-    else:
-        form = OrderForm()
-    # If GET request or invalid form, redirect to item detail or another appropriate page
-    return redirect('item_detail', item_id=item_id)
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Apply authentication globally
+    
+    def create(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            return Response({"error": "Admins cannot make orders for customers."}, status=status.HTTP_403_FORBIDDEN)
+        return super().create(request, *args, **kwargs)

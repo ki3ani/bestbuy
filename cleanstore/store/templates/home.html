@@ -1,19 +1,18 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<h2>Available Items</h2>
-<div class="items-list">
-    {% for item in items %}
-    <div class="item">
-        <h3><a href="{% url 'item_detail' item.id %}">{{ item.name }}</a></h3>
-        <!-- Optional: Display item image if exists -->
-        {% if item.image %}
-        <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width:100px; height:auto;">
-        {% endif %}
-        <p>Price: ${{ item.price }}</p>
-        <!-- The link to item details -->
-        <p><a href="{% url 'item_detail' item.id %}">View Details</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+    <h1>Welcome to our Store</h1>
+    <div class="item-list">
+        <!-- Display list of items here -->
     </div>
-    {% endfor %}
-</div>
-{% endblock %}
+    <footer>
+        <!-- Add footer content here -->
+    </footer>
+</body>
+</html>
