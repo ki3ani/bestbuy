@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<p>Welcome, {{ request.user.username }}!</p>
+
+<h2>Create Order</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+
+<h2>Your Orders</h2>
+<ul>
+    {% for order in orders %}
+    <li>{{ order.item }} - ${{ order.amount }} - {{ order.time }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
