@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -170,6 +171,5 @@ EMAIL_HOST_PASSWORD = 'mypa leod wvfp piyx'
 EMAIL_USE_TLS = True
 
 
-# settings.py
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

@@ -1,20 +1,19 @@
-{% extends "base.html" %}
-
-{% load socialaccount %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome to Our Store</h1>
-{% if user.is_authenticated %}
-    <p>Hi, {{ user.username }}! You are logged in. <a href="{% url 'dashboard' %}">View Dashboard</a></p>
-    <p><a href="{% url 'account_logout' %}">Logout</a></p>
-{% else %}
-    <p>You are not logged in. <a href="{% url 'account_login' %}">Login</a> or <a href="{% url 'account_signup' %}">Register</a>.</p>
-    <!-- Display sign-in links for all available social account providers -->
-    <div>
-        {% providers_media_js %}
-        {% for provider in socialaccount_providers %}
-            <a href="{% provider_login_url provider.id method="oauth2" %}">Sign in with {{ provider.name }}</a><br>
-        {% endfor %}
+<h2>Available Items</h2>
+<div class="items-list">
+    {% for item in items %}
+    <div class="item">
+        <h3><a href="{% url 'item_detail' item.id %}">{{ item.name }}</a></h3>
+        <!-- Optional: Display item image if exists -->
+        {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width:100px; height:auto;">
+        {% endif %}
+        <p>Price: ${{ item.price }}</p>
+        <!-- The link to item details -->
+        <p><a href="{% url 'item_detail' item.id %}">View Details</a></p>
     </div>
-{% endif %}
+    {% endfor %}
+</div>
 {% endblock %}

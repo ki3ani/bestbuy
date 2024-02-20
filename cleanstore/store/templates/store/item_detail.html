@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="item-detail">
+        <h2>{{ item.name }}</h2>
+        <p>{{ item.description }}</p>
+        <p>Price: ${{ item.price }}</p>
+        {% if request.user.is_authenticated %}
+            <a href="#" class="order-now">Order Now</a>
+        {% else %}
+            <p>Please <a href="{% url 'account_login' %}">log in</a> to place an order.</p>
+        {% endif %}
+    </div>
+{% endblock %}
