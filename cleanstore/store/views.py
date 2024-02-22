@@ -1,3 +1,4 @@
+from .permissions import IsAdminOrReadOnly
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from .models import Item, Order
@@ -22,20 +23,31 @@ class DashboardViewSet(viewsets.ViewSet):
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
+ 
+
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Add authentication to ItemViewSet
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Apply authentication globally
-    
+    permission_classes = [permissions.IsAuthenticated]  # Ensure user is authenticated
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the orders
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Order.objects.filter(customer=user.customer)
+
     def create(self, request, *args, **kwargs):
+        # Custom logic for creation, ensuring admins cannot create orders
         if request.user.is_staff:
             return Response({"error": "Admins cannot make orders for customers."}, status=status.HTTP_403_FORBIDDEN)
+        # Proceed with the normal creation process
         return super().create(request, *args, **kwargs)
 
 
