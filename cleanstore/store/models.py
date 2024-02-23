@@ -15,6 +15,7 @@ class Item(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     customer_number = models.UUIDField(default=uuid.uuid4, editable=False)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)  # Add a phone number field
 
     def __str__(self):
         return self.user.username
