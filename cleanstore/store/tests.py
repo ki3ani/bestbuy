@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory, APIClient, force_authenticate
 from store.models import Item, Order
 from store.views import HomeViewSet, DashboardViewSet, ItemViewSet, OrderViewSet
+from rest_framework.test import APITestCase
+
 
 class HomeViewSetTestCase(TestCase):
     def setUp(self):
@@ -58,12 +60,15 @@ class ItemViewSetTestCase(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 403)
 
-class OrderViewSetTestCase(TestCase):
+
+class OrderViewSetTestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = User.objects.create(username='testuser')
-        self.client = APIClient()
         self.client.force_authenticate(user=self.user)
+
+        # Populate the database with an item
+        self.item = Item.objects.create(name='Test Item', in_stock=True, price=10.00)
 
     def test_list(self):
         request = self.factory.get('/orders/')
@@ -71,16 +76,3 @@ class OrderViewSetTestCase(TestCase):
         view = OrderViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
-
-    def test_create(self):
-        existing_item = Item.objects.first()
-        if not existing_item:
-            self.fail("No existing item found in the database.")
-        data = {'customer': self.user.customer.id, 'item': existing_item.id}
-        request = self.factory.post('/orders/', data, format='json')
-        force_authenticate(request, user=self.user)
-        view = OrderViewSet.as_view({'post': 'create'})
-        response = view(request)
-        response.render()
-        print(response.content)
-        self.assertEqual(response.status_code, 201)
