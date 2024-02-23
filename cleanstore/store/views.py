@@ -1,7 +1,9 @@
+from django.shortcuts import redirect, render
+from .forms import PhoneNumberForm
 from .permissions import IsAdminOrReadOnly
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
-from .models import Item, Order
+from .models import Customer, Item, Order
 from .serializers import ItemSerializer, OrderSerializer
 
 
@@ -57,3 +59,20 @@ class OrderCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user.customer)
+
+
+def add_phone_number(request):
+    if request.method == 'POST':
+        form = PhoneNumberForm(request.POST)
+        if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
+            customer = Customer.objects.get(user=request.user)
+            customer.phone_number = phone_number
+            customer.save()
+            # Clear the session flag
+            if 'require_phone_number' in request.session:
+                del request.session['require_phone_number']
+            return redirect('some_success_url')  # Redirect to a success page or home
+    else:
+        form = PhoneNumberForm()
+    return render(request, 'add_phone_number.html', {'form': form})

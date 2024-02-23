@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'store.middleware.PhoneNumberMiddleware',
 ]
 
 ROOT_URLCONF = 'cleanstore.urls'
@@ -183,3 +184,6 @@ EMAIL_USE_TLS = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+ACCOUNT_FORMS = {'signup': 'store.forms.CustomSignupForm'}
