@@ -2,69 +2,26 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cleanstore-deployment
+  labels:
+    app: cleanstore
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cleanstore-app
+      app: cleanstore
   template:
     metadata:
       labels:
-        app: cleanstore-app
+        app: cleanstore
     spec:
       containers:
-      - name: cleanstore-web
-        image: ki3ani/cleanstore:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: AFRICAS_TALKING_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: africas-talking-secret
-              key: africas_talking_username
-        - name: AFRICAS_TALKING_APIKEY
-          valueFrom:
-            secretKeyRef:
-              name: africas-talking-secret
-              key: africas_talking_apikey
-        - name: DJANGO_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: django-secret
-              key: django_secret_key
-        - name: GOOGLE_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: google-secret
-              key: google_client_id
-        - name: GOOGLE_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: google-secret
-              key: google_secret
-        - name: DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: db_name
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: db_user
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: db_password
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: db_host
-        - name: DB_PORT
-          valueFrom:
-            secretKeyRef:
-              name: db-credentials
-              key: db_port
+        - name: cleanstore-web
+          image: ki3ani/cleanstore:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: AFRICAS_TALKING_USERNAME
+              value: "sandbox"
+            - name: AFRICAS_TALKING_APIKEY
+              value: "1192b655e4f18289edcffe3d714440b75f22323c663cedbc0519871c3e1bdf30"
+            # Add other environment variables as needed
