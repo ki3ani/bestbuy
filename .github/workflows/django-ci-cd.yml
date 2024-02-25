@@ -32,17 +32,18 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
+    # Update paths to reference the cleanstore directory
     - name: Build Docker Image
-      run: docker compose -f docker-compose.yml build
+      run: docker compose -f bestbuy/cleanstore/docker-compose.yml build
 
     - name: Run Docker Container
-      run: docker compose up -d
+      run: docker compose -f bestbuy/cleanstore/docker-compose.yml up -d
 
     - name: Run Migrations
-      run: docker compose run web python manage.py migrate
+      run: docker compose -f bestbuy/cleanstore/docker-compose.yml run web python manage.py migrate
 
     - name: Run Tests
-      run: docker compose run web python manage.py test
+      run: docker compose -f bestbuy/cleanstore/docker-compose.yml run web python manage.py test
 
   deploy-to-eks:
     needs: build-and-test
@@ -57,8 +58,10 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+    # Ensure to change directory to the cleanstore directory before building
     - name: Build, Tag, and Push Docker Image to Docker Hub
       run: |
+        cd bestbuy/cleanstore
         docker build -t ki3ani/cleanstore:latest .
         docker push ki3ani/cleanstore:latest
 
@@ -79,4 +82,3 @@ jobs:
       run: |
         kubectl set image deployment/cleanstore-deployment cleanstore-web=ki3ani/cleanstore:latest
         kubectl rollout restart deployment/cleanstore-deployment
-
