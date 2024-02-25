@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:13
@@ -8,16 +9,24 @@ services:
       POSTGRES_DB: cleanstore
       POSTGRES_USER: kimso
       POSTGRES_PASSWORD: Omniman2024
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/code
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://kimso:Omniman2024@db:5432/cleanstore
+      DB_NAME: cleanstore
+      DB_USER: kimso
+      DB_PASSWORD: Omniman2024
+      DB_HOST: db
+      DB_PORT: 5432
+      # Optionally, you can still define DATABASE_URL if you need it for other purposes
+      # DATABASE_URL: postgres://kimso:Omniman2024@db:5432/cleanstore
+
 volumes:
   postgres_data:
