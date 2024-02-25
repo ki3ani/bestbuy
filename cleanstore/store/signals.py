@@ -3,6 +3,8 @@ import africastalking
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from allauth.account.signals import user_logged_in
+from django.shortcuts import redirect
 from .models import Customer, Order
 from dotenv import load_dotenv
 
@@ -24,7 +26,7 @@ sms = africastalking.SMS
 def send_order_confirmation_sms(sender, instance, created, **kwargs):
     if created:
         message = f"Hello, {instance.customer.user.username}. Your order for {instance.item.name} has been placed successfully."
-        phone_number = instance.customer.phone_number  # Make sure this is correctly set in your Customer model
+        phone_number = instance.customer.phone_number  # Ensure the phone number is correctly set in your Customer model
         try:
             response = sms.send(message, [phone_number])
             print(response)
@@ -35,6 +37,19 @@ def send_order_confirmation_sms(sender, instance, created, **kwargs):
 def create_or_update_user_customer(sender, instance, created, **kwargs):
     if created:
         Customer.objects.create(user=instance)
-    # Ensure customer instance is saved if it exists
     elif hasattr(instance, 'customer'):
         instance.customer.save()
+
+@receiver(user_logged_in)
+def user_logged_in_callback(sender, request, user, **kwargs):
+    # Check if the user has a phone number
+    try:
+        customer = user.customer
+        if not customer.phone_number:
+            # If the phone number is not present, redirect to the phone number form
+            # Use a session variable or a flag to indicate the need for a phone number
+            request.session['require_phone_number'] = True
+            return redirect('add_phone_number') 
+    except Customer.DoesNotExist:
+        # Handle cases where the user does not have a related Customer object
+        pass

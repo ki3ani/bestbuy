@@ -72,7 +72,7 @@ def add_phone_number(request):
             # Clear the session flag
             if 'require_phone_number' in request.session:
                 del request.session['require_phone_number']
-            return redirect('some_success_url')  # Redirect to a success page or home
+            return redirect('home') 
     else:
         form = PhoneNumberForm()
     return render(request, 'add_phone_number.html', {'form': form})
