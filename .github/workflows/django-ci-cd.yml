@@ -34,16 +34,16 @@ jobs:
 
     # Update paths to reference the cleanstore directory
     - name: Build Docker Image
-      run: docker compose -f bestbuy/cleanstore/docker-compose.yml build
+      run: docker compose -f cleanstore/docker-compose.yml build
 
     - name: Run Docker Container
-      run: docker compose -f bestbuy/cleanstore/docker-compose.yml up -d
+      run: docker compose -f cleanstore/docker-compose.yml up -d
 
     - name: Run Migrations
-      run: docker compose -f bestbuy/cleanstore/docker-compose.yml run web python manage.py migrate
+      run: docker compose -f cleanstore/docker-compose.yml run web python manage.py migrate
 
     - name: Run Tests
-      run: docker compose -f bestbuy/cleanstore/docker-compose.yml run web python manage.py test
+      run: docker compose -f cleanstore/docker-compose.yml run web python manage.py test
 
   deploy-to-eks:
     needs: build-and-test
