@@ -19,13 +19,15 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    env_file:
+      - .env  # Load environment variables from the .env file located in the project root.
     environment:
       DB_NAME: cleanstore
       DB_USER: kimso
       DB_PASSWORD: Omniman2024
       DB_HOST: db
       DB_PORT: 5432
-      # Optionally, you can still define DATABASE_URL if you need it for other purposes
+      # The DATABASE_URL can be composed using the environment variables above, or directly set in the .env file.
       # DATABASE_URL: postgres://kimso:Omniman2024@db:5432/cleanstore
 
 volumes:
