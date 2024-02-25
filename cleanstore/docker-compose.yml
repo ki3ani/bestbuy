@@ -6,9 +6,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: cleanstore
-      POSTGRES_USER: kimso
-      POSTGRES_PASSWORD: Omniman2024
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
   web:
     build: .
@@ -19,16 +19,18 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    env_file:
-      - .env  # Load environment variables from the .env file located in the project root.
     environment:
-      DB_NAME: cleanstore
-      DB_USER: kimso
-      DB_PASSWORD: Omniman2024
-      DB_HOST: db
-      DB_PORT: 5432
-      # The DATABASE_URL can be composed using the environment variables above, or directly set in the .env file.
-      # DATABASE_URL: postgres://kimso:Omniman2024@db:5432/cleanstore
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME}
+      AFRICAS_TALKING_APIKEY: ${AFRICAS_TALKING_APIKEY}
+      
 
 volumes:
   postgres_data:
