@@ -72,7 +72,7 @@ jobs:
 
     - name: Build, Tag, and Push Docker Image to Docker Hub
       run: |
-        cd bestbuy/cleanstore
+        cd cleanstore
         docker build -t ki3ani/cleanstore:latest .
         docker push ki3ani/cleanstore:latest
 
