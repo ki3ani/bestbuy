@@ -16,3 +16,5 @@ urlpatterns = [
     path('', include(router.urls)),  # Includes all registered routes
     path('add_phone_number/', add_phone_number, name='add_phone_number'),
 ]
+
+#routes
