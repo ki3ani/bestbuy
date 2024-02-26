@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
-      run: docker compose run -e AFRICAS_TALKING_API_KEY=${{ secrets.AFRICAS_TALKING_API_KEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} web python manage.py test
+      run: docker compose run -e AFRICAS_TALKING_API_KEY=${{ secrets.AFRICAS_TALKING_API_KEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} web python manage.py test
       working-directory: ./cleanstore
 
   migrate_and_collectstatic:
@@ -30,10 +30,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run migrations
-      run: docker compose run -e AFRICAS_TALKING_API_KEY=${{ secrets.AFRICAS_TALKING_API_KEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} web python manage.py migrate
+      run: docker compose run -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} web python manage.py migrate
       working-directory: ./cleanstore
     - name: Collect static files
-      run: docker compose run -e AFRICAS_TALKING_API_KEY=${{ secrets.AFRICAS_TALKING_API_KEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} web python manage.py collectstatic --noinput
+      run: docker compose run -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} web python manage.py collectstatic --noinput
       working-directory: ./cleanstore
 
   deploy:
@@ -61,4 +61,4 @@ jobs:
         # Deploy to Elastic Beanstalk
         # Generate a Dockerrun.aws.json or use existing Docker Compose file
         # This command assumes you have prepared your application package correctly
-        eb deploy YourEBEnvironmentName --staged
+        eb deploy Cleanstoreobv-env --staged
