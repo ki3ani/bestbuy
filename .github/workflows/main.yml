@@ -46,8 +46,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install AWS CLI
-      run: sudo apt-get install awsebcli
+    - name: Install AWS Elastic Beanstalk CLI
+      run: pip install awsebcli
     - name: Deploy to AWS Elastic Beanstalk
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
