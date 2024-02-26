@@ -11,56 +11,41 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: cleanstore
-          POSTGRES_USER: kimso
-          POSTGRES_PASSWORD: Omniman2024
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Create .env file
+      
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
         run: |
-          # Your environment variables setup
-      - name: Build Docker Image
-        run: docker compose -f cleanstore/docker-compose.yml build
-      - name: Log in to Docker Hub
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: |
+          pytest
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Tag Docker Image
-        run: docker tag cleanstore:latest ki3ani/cleanstore:latest
-      - name: Push Docker Image to Docker Hub
-        run: docker push ki3ani/cleanstore:latest
-      - name: Run Docker Container
-        run: docker compose -f cleanstore/docker-compose.yml up -d
-      - name: Run Migrations
-        run: docker compose -f cleanstore/docker-compose.yml run web python manage.py migrate
-      - name: Run Tests
-        run: docker compose -f cleanstore/docker-compose.yml run web python manage.py test
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-  deploy-to-railway:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Railway CLI
-        run: npm install -g railway
-      - name: Login to Railway
-        run: railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cleanstore:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/cleanstore:latest
+
       - name: Deploy to Railway
         run: railway up
         env:
