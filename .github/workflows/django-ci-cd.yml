@@ -22,14 +22,14 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd your_project_directory # Change this to your Django project directory if necessary
+        cd cleanstore # Change this to your Django project directory if necessary
         pip install -r requirements.txt
 
     - name: Run Tests
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
       run: |
-        cd your_project_directory # Change this if your manage.py isn't in the root directory
+        cd cleanstore # Change this if your manage.py isn't in the root directory
         python manage.py test
 
     - name: Build Docker image
