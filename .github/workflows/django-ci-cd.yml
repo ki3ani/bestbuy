@@ -9,88 +9,85 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: cleanstore
-          POSTGRES_USER: kimso
-          POSTGRES_PASSWORD: Omniman2024
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Create .env file
-        run: |
-          echo "AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }}" >> cleanstore/.env
-          echo "AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }}" >> cleanstore/.env
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> cleanstore/.env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> cleanstore/.env
-          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> cleanstore/.env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> cleanstore/.env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> cleanstore/.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> cleanstore/.env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> cleanstore/.env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> cleanstore/.env
-
-      - name: Build Docker Image
-        run: docker compose -f cleanstore/docker-compose.yml build
-
-      - name: Run Docker Container
-        run: docker compose -f cleanstore/docker-compose.yml up -d
-
-      - name: Run Migrations
-        run: docker compose -f cleanstore/docker-compose.yml run web python manage.py migrate
-
-      - name: Run Tests
-        run: docker compose -f cleanstore/docker-compose.yml run web python manage.py test
-
-  deploy-to-eks:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build, Tag, and Push Docker Image to Docker Hub
-        run: |
-          cd cleanstore
-          docker build -t ki3ani/cleanstore:latest .
-          docker push ki3ani/cleanstore:latest
-
-      - name: Set up Kubeconfig
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          context: ./cleanstore
+          file: ./cleanstore/Dockerfile
+          push: true
+          tags: ki3ani/cleanstore:latest
 
-      - name: Install kubectl
+      - name: Create .env file
         run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }}" >> .env
+          echo "AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }}" >> .env
+        working-directory: ./cleanstore
 
-      - name: Deploy to Amazon EKS
-        run: |
-          aws eks --region us-east-2 update-kubeconfig --name cleanstore-cluster
-          kubectl set image deployment/cleanstore-deployment cleanstore-web=ki3ani/cleanstore:latest
-          kubectl rollout restart deployment/cleanstore-deployment
+      - name: Run Docker Container
+        run: docker compose -f docker-compose.yml up -d
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: ./cleanstore
+
+      - name: Run Migrations
+        run: docker compose -f docker-compose.yml run web python manage.py migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: ./cleanstore
+
+      - name: Collect Static Files
+        run: docker compose -f docker-compose.yml run web python manage.py collectstatic --noinput
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: ./cleanstore
+
+      - name: Run Tests
+        run: docker compose -f docker-compose.yml run web python manage.py test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: ./cleanstore
+
+  deploy-to-railway:
+    needs: build-test-deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Railway CLI
+        run: npm install -g railway
+
+      - name: Login to Railway
+        run: railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+      
+      - name: Deploy to Railway
+        run: railway up
+        env:
+          RAILWAY_PROJECT: pithy-sky
+          RAILWAY_ENVIRONMENT: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
