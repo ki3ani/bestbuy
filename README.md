@@ -1,4 +1,4 @@
-# bestbuy
+# Assignment Submission
 # Ordering System
 
 The Ordering System is a web application built with Django that allows users to place orders and receive notifications using Africa's Talking API. It incorporates Django Allauth for authentication, Docker for containerization, GitHub Actions for Continuous Integration/Continuous Deployment (CI/CD), and Kubernetes with Amazon EKS for deployment.
