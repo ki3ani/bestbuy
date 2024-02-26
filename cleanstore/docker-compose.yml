@@ -1,15 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -17,20 +8,11 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-    depends_on:
-      - db
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_SECRET: ${GOOGLE_SECRET}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DATABASE_URL: ${DATABASE_URL}  # Use this for your production Railway DB
       AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME}
       AFRICAS_TALKING_APIKEY: ${AFRICAS_TALKING_APIKEY}
-      
-
-volumes:
-  postgres_data:
+    
