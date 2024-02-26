@@ -35,7 +35,7 @@ jobs:
           context: ./cleanstore
           file: ./cleanstore/Dockerfile
           push: true
-          tags: yourusername/cleanstore:latest
+          tags: ki3ani/cleanstore:latest
 
       - name: Create .env file
         run: |
