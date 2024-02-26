@@ -81,4 +81,4 @@ jobs:
           # Deploy to Elastic Beanstalk
           # Generate a Dockerrun.aws.json or use existing Docker Compose file
           # This command assumes you have prepared your application package correctly
-          eb deploy Cleanstoreobv-env --staged
+          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
