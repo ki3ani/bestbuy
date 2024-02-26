@@ -41,9 +41,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Tag Docker Image
-        run: docker tag cleanstore:latest yourdockerhubusername/cleanstore:latest
+        run: docker tag cleanstore:latest ki3ani/cleanstore:latest
       - name: Push Docker Image to Docker Hub
-        run: docker push yourdockerhubusername/cleanstore:latest
+        run: docker push ki3ani/cleanstore:latest
       - name: Run Docker Container
         run: docker compose -f cleanstore/docker-compose.yml up -d
       - name: Run Migrations
