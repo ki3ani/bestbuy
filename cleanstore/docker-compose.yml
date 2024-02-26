@@ -26,11 +26,10 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgresql-service 
       DB_PORT: ${DB_PORT}
       AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME}
       AFRICAS_TALKING_APIKEY: ${AFRICAS_TALKING_APIKEY}
-      
 
 volumes:
   postgres_data:
