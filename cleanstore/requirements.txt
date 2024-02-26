@@ -1,4 +1,3 @@
-Cython
 africastalking==1.2.7
 asgiref==3.7.2
 attrs==23.2.0
@@ -9,6 +8,7 @@ charset-normalizer==3.3.2
 contextlib2==21.6.0
 coverage==7.4.2
 cryptography==42.0.3
+Cython==3.0.8
 defusedxml==0.7.1
 distro==1.9.0
 dj-database-url==2.1.0
@@ -36,7 +36,7 @@ pyrsistent==0.20.0
 python-dotenv==0.21.1
 python3-openid==3.2.0
 pytz==2024.1
-PyYAML==5.4.1
+PyYAML==6.0.1
 requests==2.31.0
 requests-oauthlib==1.3.1
 schema==0.7.5
