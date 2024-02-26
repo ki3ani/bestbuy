@@ -37,7 +37,7 @@ jobs:
           push: true
           tags: ki3ani/cleanstore:latest
 
-      - name: Create .env file
+      - name: Create .env file for Django settings
         run: |
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
@@ -78,13 +78,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Install Railway CLI
         run: npm install -g railway
 
       - name: Login to Railway
         run: railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
-      
+
       - name: Deploy to Railway
         run: railway up
         env:
