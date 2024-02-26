@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: cleanstore-deployment
   labels:
-    app: cleanstore
+    app: cleanstore-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cleanstore
+      app: cleanstore-app
   template:
     metadata:
       labels:
-        app: cleanstore
+        app: cleanstore-app
     spec:
       containers:
         - name: cleanstore-web
@@ -21,7 +21,27 @@ spec:
             - containerPort: 8000
           env:
             - name: AFRICAS_TALKING_USERNAME
-              value: "sandbox"
+              valueFrom:
+                secretKeyRef:
+                  name: africas-talking-credentials
+                  key: AFRICAS_TALKING_USERNAME
             - name: AFRICAS_TALKING_APIKEY
-              value: "1192b655e4f18289edcffe3d714440b75f22323c663cedbc0519871c3e1bdf30"
-            # Add other environment variables as needed
+              valueFrom:
+                secretKeyRef:
+                  name: africas-talking-credentials
+                  key: AFRICAS_TALKING_APIKEY
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secrets
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secrets
+                  key: DB_PASSWORD
