@@ -64,5 +64,5 @@ jobs:
       - name: Deploy to Railway
         run: railway up
         env:
-          RAILWAY_PROJECT: your_project_name_here
+          RAILWAY_PROJECT: pithy-sky
           RAILWAY_ENVIRONMENT: production
