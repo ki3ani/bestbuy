@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ./cleanstore/Dockerfile
           push: true
           tags: ki3ani/cleanstore:latest
 
