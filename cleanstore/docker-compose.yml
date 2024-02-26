@@ -3,16 +3,14 @@ version: '3.8'
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn your_project_name.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/code
+      - static_volume:/code/staticfiles
     ports:
       - "8000:8000"
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_SECRET: ${GOOGLE_SECRET}
-      DATABASE_URL: ${DATABASE_URL}  # Use this for your production Railway DB
-      AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME}
-      AFRICAS_TALKING_APIKEY: ${AFRICAS_TALKING_APIKEY}
-    
+      - DATABASE_URL=${DATABASE_URL}
+
+volumes:
+  static_volume:
