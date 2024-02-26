@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import dj_database_url
 from dotenv import load_dotenv
 
 
@@ -75,9 +74,15 @@ WSGI_APPLICATION = 'cleanstore.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'kimsconvenience',
+        'USER': 'kenneth',
+        'PASSWORD': 'Omniman1970',
+        'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+        'PORT': '5432',
+    }
 }
 
 # Password validation
