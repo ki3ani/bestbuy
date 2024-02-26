@@ -32,31 +32,36 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./cleanstore
           file: ./cleanstore/Dockerfile
           push: true
-          tags: ki3ani/cleanstore:latest
+          tags: yourusername/cleanstore:latest
 
       - name: Create .env file
         run: |
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
-          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> .env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-          echo "AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }}" >> .env
-          echo "AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> cleanstore/.env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> cleanstore/.env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> cleanstore/.env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> cleanstore/.env
+          echo "AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }}" >> cleanstore/.env
+          echo "AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }}" >> cleanstore/.env
+        working-directory: ./cleanstore
 
       - name: Run Docker Container
         run: docker compose -f docker-compose.yml up -d
+        working-directory: ./cleanstore
 
       - name: Run Migrations
         run: docker compose -f docker-compose.yml run web python manage.py migrate
+        working-directory: ./cleanstore
 
       - name: Collect Static Files
         run: docker compose -f docker-compose.yml run web python manage.py collectstatic --noinput
+        working-directory: ./cleanstore
 
       - name: Run Tests
         run: docker compose -f docker-compose.yml run web python manage.py test
+        working-directory: ./cleanstore
 
   deploy-to-railway:
     needs: build-test-deploy
