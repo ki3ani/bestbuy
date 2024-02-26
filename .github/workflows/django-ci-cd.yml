@@ -45,16 +45,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Pull Docker image
-      run: docker pull ki3ani/cleaningstore:latest
-
-    - name: Run Migrate and Collectstatic
+    - name: Install Railway CLI
       run: |
-        docker run -e DATABASE_URL=${{ secrets.DATABASE_URL }} ki3ani/cleaningstore:latest sh -c "python manage.py migrate && python manage.py collectstatic --noinput"
+        curl -sL https://raw.githubusercontent.com/railwayapp/cli/master/install.sh | sh
+        echo "$HOME/.railway/bin" >> $GITHUB_PATH
 
-      - name: Deploy to Railway
-        run: railway up
-        env:
-          RAILWAY_PROJECT: pithy-sky
-          RAILWAY_ENVIRONMENT: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    - name: Login to Railway
+      run: railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+
+    - name: Deploy to Railway
+      run: railway up
+      env:
+        RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+        
