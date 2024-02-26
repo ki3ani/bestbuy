@@ -27,7 +27,6 @@ jobs:
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
-            web python -c "import sys; print(sys.path); import your_module; print('Module found!')"  # Add debugging statement here
         working-directory: ./cleanstore
 
   migrate_and_collectstatic:
@@ -42,7 +41,6 @@ jobs:
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
-            web python -c "import sys; print(sys.path); import your_module; print('Module found!')"  # Add debugging statement here
         working-directory: ./cleanstore
       - name: Collect static files
         run: |
@@ -51,7 +49,6 @@ jobs:
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
-            web python -c "import sys; print(sys.path); import your_module; print('Module found!')"  # Add debugging statement here
         working-directory: ./cleanstore
 
   deploy:
