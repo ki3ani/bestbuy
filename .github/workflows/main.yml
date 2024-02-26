@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
-      run: docker compose run -e AFRICAS_TALKING_API_KEY=${{ secrets.AFRICAS_TALKING_API_KEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} web python manage.py test
+      run: docker compose run -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} -e GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} web python manage.py test
       working-directory: ./cleanstore
 
   migrate_and_collectstatic:
