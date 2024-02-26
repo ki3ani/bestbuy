@@ -77,10 +77,10 @@ WSGI_APPLICATION = 'cleanstore.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kimsconvenience',
-        'USER': 'kenneth',
-        'PASSWORD': 'Omniman1970',
-        'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+        'NAME': 'bluesky',
+        'USER': 'mumbi',
+        'PASSWORD': 'cutiepie',
+        'HOST': 'db',  # Or 'localhost' if you're not using Docker or a different host if you are
         'PORT': '5432',
     }
 }
