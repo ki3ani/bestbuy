@@ -1,3 +1,4 @@
+Cython
 africastalking==1.2.7
 asgiref==3.7.2
 attrs==23.2.0
