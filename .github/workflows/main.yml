@@ -26,8 +26,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Navigate to cleanstore directory
-        working-directory: ./cleanstore
 
       - name: Pull Docker images
         run: |
@@ -37,7 +35,7 @@ jobs:
       - name: Run tests
         run: |
           docker-compose up -d
-          docker-compose exec web python manage.py test
+          docker-compose exec web cd/cleanstore python manage.py test
           docker-compose down
 
       - name: Migrate database
