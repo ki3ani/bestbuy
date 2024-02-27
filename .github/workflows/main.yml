@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker compose build
+        run: docker-compose build
         working-directory: ./cleanstore
 
   test:
@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker compose run \
+          docker-compose run \
             -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} \
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
@@ -67,6 +67,9 @@ jobs:
       - name: Create ~/.ssh directory
         run: mkdir -p ~/.ssh
 
+      - name: Create known_hosts file
+        run: touch ~/.ssh/known_hosts
+
       - name: Debug known_hosts before
         run: cat ~/.ssh/known_hosts
 
@@ -87,11 +90,11 @@ jobs:
           ssh-add ~/.ssh/aws-eb
 
       - name: Run migrations before deployment
-        run: docker-compose run -e DJANGO_SETTINGS_MODULE=cleanstore.settings web python manage.py migrate
+        run: docker-compose run -e DJANGO_SETTINGS_MODULE=your_project.settings web python manage.py migrate
         working-directory: ./cleanstore
 
       - name: Collect static files before deployment
-        run: docker-compose run -e DJANGO_SETTINGS_MODULE=cleanstore.settings web python manage.py collectstatic --noinput
+        run: docker-compose run -e DJANGO_SETTINGS_MODULE=your_project.settings web python manage.py collectstatic --noinput
         working-directory: ./cleanstore
 
       - name: Initialize Elastic Beanstalk CLI
