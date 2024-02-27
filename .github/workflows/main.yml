@@ -35,6 +35,16 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
+      - name: Set up AWS credentials and upgrade pip
+        run: |
+          echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+          pip install --upgrade pip
+          pip install awsebcli
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
       - name: Run migrations
         run: |
           docker compose run \
@@ -60,13 +70,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python
+      - name: Set up Python and AWS credentials, and upgrade pip
         uses: actions/setup-python@v2
         with:
           python-version: '3.10'
       - name: Install AWS Elastic Beanstalk CLI
         run: |
+          echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+          pip install --upgrade pip
           pip install awsebcli
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ secrets.AWS_REGION }}
           eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env  # Initialize EB CLI
       - name: Deploy to AWS Elastic Beanstalk
         env:
@@ -74,10 +91,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          # Configure AWS credentials
-          aws configure set region $AWS_REGION
-          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+          echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
+          echo "AWS_REGION: $AWS_REGION"
+          pip install --upgrade pip
           # Deploy to Elastic Beanstalk
           # Generate a Dockerrun.aws.json or use existing Docker Compose file
           # This command assumes you have prepared your application package correctly
