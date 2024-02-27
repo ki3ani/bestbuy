@@ -74,6 +74,6 @@ jobs:
           # Deploy to Elastic Beanstalk
           # Generate a Dockerrun.aws.json or use an existing Docker Compose file
           # This command assumes you have prepared your application package correctly
-          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
+          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged -i kimspair.pem
           # Run migrations and collect static files after deployment
           eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
