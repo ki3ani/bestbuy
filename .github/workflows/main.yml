@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Django CI/CD pipeline
 
 on:
   push:
