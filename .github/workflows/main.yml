@@ -42,9 +42,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set HOME
-        run: echo "HOME=${HOME}" >> $GITHUB_ENV
-
       - name: Set up Python and AWS credentials, and upgrade pip
         uses: actions/setup-python@v2
         with:
@@ -66,6 +63,9 @@ jobs:
 
       - name: Set AWS_EB_CLI_HOME
         run: echo "AWS_EB_CLI_HOME=${HOME}/.ssh" >> $GITHUB_ENV
+
+      - name: Add SSH public key
+        run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
 
       - name: Initialize Elastic Beanstalk CLI
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
