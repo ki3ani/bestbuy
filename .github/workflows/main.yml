@@ -37,7 +37,7 @@ jobs:
          docker compose up -d
          docker compose exec web bash -c "cd /cleanstore && python manage.py test"
          docker compose down
-        working-directory: ./cleanstore
+  
   
 
 
