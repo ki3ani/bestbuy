@@ -70,6 +70,9 @@ jobs:
       - name: Add SSH public key
         run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
 
+      - name: Add SSH private key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
+
       - name: Initialize Elastic Beanstalk CLI
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
 
