@@ -62,14 +62,17 @@ jobs:
           echo -n "${{ secrets.KIMSPAIR_ENCODED }}" | base64 --decode > kimspair.pem
           chmod 600 kimspair.pem
 
-          # Set up SSH key
+          # Set up SSH key in the .ssh folder
           mkdir -p ~/.ssh
           mv kimspair.pem ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # Initialize Elastic Beanstalk CLI
+          # Initialize Elastic Beanstalk CLI in the home directory
           eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env --region ${{ secrets.AWS_REGION }} --keyname kimspair.pem
 
+          # Change directory to project folder
+          cd ../houseofninjas/cleanstore
+          
           # Deploy to Elastic Beanstalk
           eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
           
