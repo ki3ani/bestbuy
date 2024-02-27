@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Deploy to Elastic Beanstalk
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     env:
@@ -25,45 +25,37 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Set up virtual environment
-        run: |
-          python -m venv envo
-          source envo/bin/activate
+      - name: Navigate to cleanstore directory
+        run: cd cleanstore
 
-      - name: Install dependencies
+      - name: Pull Docker images
         run: |
-          pip install --upgrade pip
-          pip install --upgrade -r requirements.txt
+          docker pull ki3ani/cleanstore-web:latest
+          docker pull postgres:latest
 
       - name: Run tests
         run: |
-          python manage.py test
+          docker-compose up -d
+          docker-compose exec web python manage.py test
+          docker-compose down
 
       - name: Migrate database
         run: |
-          python manage.py migrate
+          docker-compose run web python manage.py migrate
 
       - name: Collect static files
         run: |
-          python manage.py collectstatic --noinput
+          docker-compose run web python manage.py collectstatic --noinput
 
-      - name: Build Docker image
-        run: |
-          docker build -t ki3ani/cleanstore-web:latest .
-          docker push ki3ani/cleanstore-web:latest
-
-  deploy:
-    runs-on: ubuntu-latest
-
-    needs: build
-
-    steps:
       - name: Deploy to Elastic Beanstalk
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
+
+      - name: Navigate to root directory
+        run: cd ..
 
       - name: Deploy
         run: eb deploy Tintin-env
