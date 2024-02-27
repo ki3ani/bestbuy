@@ -67,6 +67,9 @@ jobs:
           mv kimspair.pem ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+          # Initialize Elastic Beanstalk CLI
+          eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env --region ${{ secrets.AWS_REGION }} --keyname kimspair.pem
+
           # Deploy to Elastic Beanstalk
           eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
           
