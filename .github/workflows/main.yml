@@ -58,6 +58,14 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ${{ secrets.AWS_REGION }}
 
+          # Debug SSH Key
+          - name: Debug SSH Key
+            run: ls -l ~/.ssh
+
+          # Set AWS_EB_CLI_HOME
+          - name: Set AWS_EB_CLI_HOME
+            run: echo "AWS_EB_CLI_HOME=${HOME}/.ssh" >> $GITHUB_ENV
+
           # Initialize Elastic Beanstalk CLI
           eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
           
