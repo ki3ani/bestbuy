@@ -59,10 +59,13 @@ jobs:
           aws configure set default.region ${{ secrets.AWS_REGION }}
 
       - name: Debug SSH Key
-        run: ls -l ~/.ssh
+        run: ls -l ~/.ssh || true  # Ignore failure if .ssh doesn't exist
 
       - name: Set AWS_EB_CLI_HOME
         run: echo "AWS_EB_CLI_HOME=${HOME}/.ssh" >> $GITHUB_ENV
+
+      - name: Create ~/.ssh directory
+        run: mkdir -p ~/.ssh
 
       - name: Add SSH public key
         run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
