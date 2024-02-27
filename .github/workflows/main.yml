@@ -25,6 +25,9 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Navigate to cleanstore directory
+        run: cd cleanstore
+
       - name: Pull Docker images
         run: |
           docker pull ki3ani/cleanstore-web:latest
