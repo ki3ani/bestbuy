@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker compose run \
+          docker-compose run \
             -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} \
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
@@ -67,8 +67,17 @@ jobs:
       - name: Create ~/.ssh directory
         run: mkdir -p ~/.ssh
 
+      - name: Debug known_hosts before
+        run: cat ~/.ssh/known_hosts
+
       - name: Add Elastic Beanstalk host key to known_hosts
         run: ssh-keyscan -H cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com >> ~/.ssh/known_hosts
+
+      - name: Debug known_hosts after
+        run: cat ~/.ssh/known_hosts
+
+      - name: Debug SSH Config
+        run: cat ~/.ssh/config
 
       - name: Add SSH public key
         run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
