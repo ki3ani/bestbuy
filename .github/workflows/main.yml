@@ -34,18 +34,18 @@ jobs:
 
       - name: Run tests
         run: |
-          docker-compose up -d
-          docker-compose exec web bash -c "cd /cleanstore && python manage.py test"
-          docker-compose down
+          docker compose up -d
+          docker compose exec web bash -c "cd /cleanstore && python manage.py test"
+          docker compose down
 
 
       - name: Migrate database
         run: |
-          docker-compose run web python manage.py migrate
+          docker compose run web python manage.py migrate
 
       - name: Collect static files
         run: |
-          docker-compose run web python manage.py collectstatic --noinput
+          docker compose run web python manage.py collectstatic --noinput
 
       - name: Deploy to Elastic Beanstalk
         uses: aws-actions/configure-aws-credentials@v1
