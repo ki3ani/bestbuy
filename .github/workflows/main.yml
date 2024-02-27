@@ -71,9 +71,20 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
           echo "AWS_REGION: $AWS_REGION"
           pip install --upgrade pip
+          
+          # Decode base64-encoded private key and save to a file
+          echo -n "${{ secrets.KIMSPAIR_PRIVATE_KEY }}" | base64 --decode > kimspair.pem
+          chmod 600 kimspair.pem
+
+          # Set up SSH key
+          mkdir -p ~/.ssh
+          mv kimspair.pem ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
           # Deploy to Elastic Beanstalk
           # Generate a Dockerrun.aws.json or use an existing Docker Compose file
           # This command assumes you have prepared your application package correctly
-          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged -i kimspair.pem
+          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
+          
           # Run migrations and collect static files after deployment
           eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
