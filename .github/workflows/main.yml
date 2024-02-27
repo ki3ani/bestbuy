@@ -74,7 +74,7 @@ jobs:
         run: echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
 
       - name: Add Elastic Beanstalk host key to known_hosts
-        run: ssh-keyscan -H http://cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com/ >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com/ >> ~/.ssh/known_hosts
 
       - name: Initialize Elastic Beanstalk CLI
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
