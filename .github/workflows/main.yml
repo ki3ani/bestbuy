@@ -67,48 +67,20 @@ jobs:
       - name: Create ~/.ssh directory
         run: mkdir -p ~/.ssh
 
-      - name: Create known_hosts file
-        run: touch ~/.ssh/known_hosts
-
-      - name: Debug known_hosts before
-        run: cat ~/.ssh/known_hosts
-
       - name: Add Elastic Beanstalk host key to known_hosts
         run: ssh-keyscan -H cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com >> ~/.ssh/known_hosts
 
-      - name: Debug known_hosts after
-        run: cat ~/.ssh/known_hosts
+      - name: Add SSH public key
+        run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
 
-      - name: Set correct permissions for SSH directory
-        run: chmod 700 ~/.ssh
+      - name: Add SSH private key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
 
-      - name: Set correct permissions for SSH config file
-        run: chmod 600 ~/.ssh/config
-
-      - name: Debug SSH Config
-        run: cat ~/.ssh/config
-
-      - name: Add SSH private key to agent
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
-          chmod 600 ~/.ssh/aws-eb
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/aws-eb
-
-      - name: Run migrations before deployment
-        run: docker-compose run -e DJANGO_SETTINGS_MODULE=your_project.settings web python manage.py migrate
-        working-directory: ./cleanstore
-
-      - name: Collect static files before deployment
-        run: docker-compose run -e DJANGO_SETTINGS_MODULE=your_project.settings web python manage.py collectstatic --noinput
-        working-directory: ./cleanstore
+      - name: Change permissions of private key
+        run: chmod 600 ~/.ssh/aws-eb
 
       - name: Initialize Elastic Beanstalk CLI
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
 
       - name: Deploy to Elastic Beanstalk
         run: eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
-
-      - name: Run migrations and collect static files after deployment
-        run: |
-          eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
