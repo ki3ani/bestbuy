@@ -72,13 +72,9 @@ jobs:
           echo "AWS_REGION: $AWS_REGION"
           pip install --upgrade pip
           
-          # Decode base64-encoded private key and save to a file
-          echo -n "${{ secrets.KIMSPAIR_PRIVATE_KEY }}" | base64 --decode > kimspair.pem
-          chmod 600 kimspair.pem
-
-          # Set up SSH key
+          # Copy the downloaded kimspair.pem key to ~/.ssh/id_rsa
           mkdir -p ~/.ssh
-          mv kimspair.pem ~/.ssh/id_rsa
+          cp Downloads/kimspair.pem ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
           # Deploy to Elastic Beanstalk
