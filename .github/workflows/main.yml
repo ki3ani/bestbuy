@@ -34,9 +34,11 @@ jobs:
 
       - name: Run tests
         run: |
+         cd cleanstore
          docker compose up -d
-         docker compose exec web bash -c "cd /cleanstore && python manage.py test"
+         docker compose exec web python manage.py test
          docker compose down
+
   
   
 
