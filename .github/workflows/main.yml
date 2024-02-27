@@ -47,6 +47,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Debug SSH Key
+        run: ls -l ~/.ssh
+
+      - name: Set AWS_EB_CLI_HOME
+        run: echo "AWS_EB_CLI_HOME=${HOME}/.ssh" >> $GITHUB_ENV
+
       - name: Install AWS Elastic Beanstalk CLI
         run: |
           echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
@@ -58,19 +64,11 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ${{ secrets.AWS_REGION }}
 
-          # Debug SSH Key
-          - name: Debug SSH Key
-            run: ls -l ~/.ssh
+      - name: Initialize Elastic Beanstalk CLI
+        run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
 
-          # Set AWS_EB_CLI_HOME
-          - name: Set AWS_EB_CLI_HOME
-            run: echo "AWS_EB_CLI_HOME=${HOME}/.ssh" >> $GITHUB_ENV
+      - name: Deploy to Elastic Beanstalk
+        run: eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
 
-          # Initialize Elastic Beanstalk CLI
-          eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
-          
-          # Deploy to Elastic Beanstalk
-          eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
-          
-          # Run migrations and collect static files after deployment
-          eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
+      - name: Run migrations and collect static files after deployment
+        run: eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
