@@ -1,4 +1,4 @@
-name: Django CI/CD pipeline
+name: Django CI/CD
 
 on:
   push:
@@ -20,37 +20,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-
-      - name: Set up virtual environment
+      - name: Test with Docker Compose
         run: |
-          python -m venv envo
-          source envo/bin/activate
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install --upgrade -r requirements.txt
-
-      - name: Run tests
-        run: |
-          python manage.py test
+          docker compose up -d
+          docker compose exec web python manage.py test
+          docker compose down
 
       - name: Migrate database
         run: |
-          python manage.py migrate
+          docker compose up -d
+          docker compose exec web python manage.py migrate
+          docker compose down
 
       - name: Collect static files
         run: |
-          python manage.py collectstatic --noinput
+          docker compose up -d
+          docker compose exec web python manage.py collectstatic --noinput
+          docker compose down
 
-      - name: Build Docker image
+      - name: Push Docker image to Docker Hub
         run: |
-          docker build -t ki3ani/cleanstore-web:latest .
-          docker push ki3ani/cleanstore-web:latest
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker tag your-docker-compose-service-name "${{ secrets.DOCKERHUB_USERNAME }}/your-docker-compose-service-name:latest"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/your-docker-compose-service-name:latest"
 
   deploy:
     runs-on: ubuntu-latest
