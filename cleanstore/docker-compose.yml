@@ -1,22 +1,23 @@
 version: '3'
+
 services:
-  db:
-    image: postgres
-    environment:
-      POSTGRES_DB: bluesky
-      POSTGRES_USER: mumbi
-      POSTGRES_PASSWORD: cutiepie
-    ports:
-      - "5432:5432"
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn cleanstore.wsgi:application -b 0.0.0.0:8000
     volumes:
-      - .:/code
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
-      DATABASE_HOST: db # Use the service name as the host
+      POSTGRES_DB: staples
+      POSTGRES_USER: ken
+      POSTGRES_PASSWORD: invincible
 
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: staples
+      POSTGRES_USER: ken
+      POSTGRES_PASSWORD: invincible

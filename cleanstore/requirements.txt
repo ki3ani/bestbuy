@@ -10,6 +10,7 @@ charset-normalizer==3.3.2
 colorama==0.4.3
 contextlib2==21.6.0
 cryptography==42.0.5
+cython==0.29.24  # Add this line
 defusedxml==0.7.1
 Django==5.0.2
 django-allauth==0.61.1

@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com','*']
+ALLOWED_HOSTS = ['tintin-env.eba-mb2vwn6d.us-east-2.elasticbeanstalk.com']
 
 
 # Application definition
@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'cleanstore.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bluesky',
-        'USER': 'mumbi',
-        'PASSWORD': 'cutiepie',
-        'HOST': 'db',  # Or 'localhost' if you're not using Docker or a different host if you are
+        'NAME': 'staples',
+        'USER': 'ken',
+        'PASSWORD': 'invincible',
+        'HOST': 'db', 
         'PORT': '5432',
     }
 }
