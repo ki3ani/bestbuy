@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker-compose run \
+          docker compose run \
             -e AFRICAS_TALKING_APIKEY=${{ secrets.AFRICAS_TALKING_APIKEY }} \
             -e AFRICAS_TALKING_USERNAME=${{ secrets.AFRICAS_TALKING_USERNAME }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
@@ -79,11 +79,20 @@ jobs:
       - name: Debug SSH Config
         run: cat ~/.ssh/config
 
-      - name: Add SSH public key
-        run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
+      - name: Add SSH private key to agent
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
+          chmod 600 ~/.ssh/aws-eb
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/aws-eb
 
-      - name: Add SSH private key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}" > ~/.ssh/aws-eb
+      - name: Run migrations before deployment
+        run: docker-compose run -e DJANGO_SETTINGS_MODULE=cleanstore.settings web python manage.py migrate
+        working-directory: ./cleanstore
+
+      - name: Collect static files before deployment
+        run: docker-compose run -e DJANGO_SETTINGS_MODULE=cleanstore.settings web python manage.py collectstatic --noinput
+        working-directory: ./cleanstore
 
       - name: Initialize Elastic Beanstalk CLI
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
@@ -92,4 +101,5 @@ jobs:
         run: eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
 
       - name: Run migrations and collect static files after deployment
-        run: eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
+        run: |
+          eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
