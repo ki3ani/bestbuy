@@ -17,6 +17,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
+
 ALLOWED_HOSTS = ['cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com','*']
 
 
