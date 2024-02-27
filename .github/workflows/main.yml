@@ -58,8 +58,8 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ${{ secrets.AWS_REGION }}
 
-          # Initialize Elastic Beanstalk CLI
-          eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
+          # Initialize Elastic Beanstalk CLI with explicit keyname
+          eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env --keyname aws-eb
           
           # Deploy to Elastic Beanstalk
           eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
