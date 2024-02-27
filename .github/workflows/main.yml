@@ -13,11 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker compose
-
       - name: Build Docker image
         run: docker compose build
         working-directory: ./cleanstore
@@ -75,9 +70,6 @@ jobs:
       - name: Add Elastic Beanstalk host key to known_hosts
         run: ssh-keyscan -H cleanstoreobv-env.eba-pkj7kp8j.us-east-2.elasticbeanstalk.com >> ~/.ssh/known_hosts
 
-      - name: Display known_hosts
-        run: cat ~/.ssh/known_hosts
-
       - name: Add SSH public key
         run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/aws-eb.pub
 
@@ -88,7 +80,7 @@ jobs:
         run: eb init -r ${{ secrets.AWS_REGION }} -p docker Cleanstoreobv-env
 
       - name: Deploy to Elastic Beanstalk
-        run: eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged --privatekey <(echo "${{ secrets.SSH_PRIVATE_KEY_AWSEB }}")
+        run: eb deploy Cleanstoreobv-env --label app-240227_021624914308 --staged
 
       - name: Run migrations and collect static files after deployment
         run: eb ssh Cleanstoreobv-env --command "docker exec -it cleanstore_web_1 python manage.py migrate && docker exec -it cleanstore_web_1 python manage.py collectstatic --noinput"
