@@ -20,19 +20,20 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install -r cleanstore/requirements.txt
 
     - name: Run tests
       run: |
-        python manage.py tests
+        python cleanstore/manage.py tests
 
     - name: Apply migrations
       run: |
-        python manage.py migrate
+        python cleanstore/manage.py migrate
 
     - name: Collect static files
       run: |
-        python manage.py collectstatic --noinput
+        python cleanstore/manage.py collectstatic --noinput
 
   dockerize:
     runs-on: ubuntu-latest
@@ -46,8 +47,9 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        docker compose build
-        docker compose push
+        cd cleanstore
+        docker-compose build
+        docker-compose push
 
   deploy:
     runs-on: ubuntu-latest
@@ -65,6 +67,7 @@ jobs:
 
     - name: Deploy to Elastic Beanstalk
       run: |
+        cd cleanstore
         eb create clean
         eb deploy
 
