@@ -22,7 +22,7 @@ The Ordering System is a web application built with Django that allows users to 
 - Kubernetes: An open-source container orchestration platform for automating deployment, scaling, and management of containerized applications.
 - Amazon EKS (Elastic Kubernetes Service): Managed Kubernetes service provided by Amazon Web Services (AWS) for deploying, managing, and scaling containerized applications.
 
-## Installation and Setup
+## Installation and Set-up 
 
 1. Clone the repository:
 
