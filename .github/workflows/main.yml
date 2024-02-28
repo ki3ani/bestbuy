@@ -30,7 +30,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python cleanstore/manage.py tests
+        python cleanstore/manage.py test
 
     - name: Apply migrations
       run: |
