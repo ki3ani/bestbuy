@@ -3,17 +3,15 @@ version: '3'
 services:
   web:
     build: .
-    command: gunicorn cleanstore.wsgi:application -b 0.0.0.0:8000
+    command: bash -c "python manage.py migrate && gunicorn cleanstore.wsgi:application -b 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      POSTGRES_DB: staples
-      POSTGRES_USER: ken
-      POSTGRES_PASSWORD: invincible
+    env_file:
+      - .env
 
   db:
     image: postgres:latest
