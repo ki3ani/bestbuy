@@ -18,6 +18,11 @@ jobs:
       with:
         python-version: '3.10'
 
+    - name: Set up environment variables
+      run: |
+        echo "AFRICAS_TALKING_USERNAME=sandbox" >> $GITHUB_ENV
+        echo "AFRICAS_TALKING_APIKEY=1192b655e4f18289edcffe3d714440b75f22323c663cedbc0519871c3e1bdf30" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         pip install --upgrade pip
@@ -48,8 +53,8 @@ jobs:
     - name: Build and push Docker images
       run: |
         cd cleanstore
-        docker-compose build
-        docker-compose push
+        docker compose build
+        docker compose push
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,6 +69,10 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-2
+
+    - name: Install Elastic Beanstalk CLI
+      run: |
+        pip install awsebcli
 
     - name: Deploy to Elastic Beanstalk
       run: |
