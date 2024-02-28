@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
+# Install dockerize
+RUN apt-get update && apt-get install -y dockerize
+
 # Install Elastic Beanstalk CLI
 RUN pip install awsebcli
 

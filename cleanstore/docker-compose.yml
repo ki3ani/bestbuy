@@ -3,7 +3,7 @@ version: '3'
 services:
   web:
     build: .
-    command: bash -c "python manage.py migrate && gunicorn cleanstore.wsgi:application -b 0.0.0.0:8000"
+    command: bash -c "dockerize -wait tcp://db:5432 -timeout 1m python manage.py migrate && gunicorn cleanstore.wsgi:application -b 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
