@@ -1,62 +1,74 @@
-name: Deploy to Elastic Beanstalk
+name: Django CI/CD
 
 on:
   push:
     branches:
       - main
 
-
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        python manage.py tests
+
+    - name: Apply migrations
+      run: |
+        python manage.py migrate
+
+    - name: Collect static files
+      run: |
+        python manage.py collectstatic --noinput
+
+  dockerize:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: actions/setup-docker@v2
+
+    - name: Build and push Docker images
+      run: |
+        docker compose build
+        docker compose push
+
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
-      AFRICAS_TALKING_APIKEY: ${{ secrets.AFRICAS_TALKING_APIKEY }}
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
+    - name: Set up AWS Elastic Beanstalk
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
 
+    - name: Deploy to Elastic Beanstalk
+      run: |
+        eb create clean
+        eb deploy
 
-      - name: Pull Docker images
-        run: |
-          docker pull ki3ani/cleanstore-web:latest
-          docker pull postgres:latest
-
-      - name: Run tests
-        run: |
-         cd cleanstore
-         docker compose up -d
-         docker compose exec web python manage.py test
-         docker compose down
-
-  
-  
-
-
-      - name: Migrate database
-        run: |
-          docker compose run web python manage.py migrate
-
-      - name: Collect static files
-        run: |
-          docker compose run web python manage.py collectstatic --noinput
-
-      - name: Deploy to Elastic Beanstalk
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
-
-      - name: Deploy
-        run: eb deploy Tintin-env
+    - name: Get Elastic Beanstalk URL
+      run: |
+        EB_URL=$(eb status --verbose | grep CNAME | awk '{print $2}')
+        echo "Live System URL: $EB_URL"
