@@ -1,8 +1,14 @@
 from .base import *
-import dj_database_url
 
 DEBUG = False
-i
+
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://ken:invincible@db:5432/staples')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'staples',
+        'USER': 'ken',
+        'PASSWORD': 'invincible',
+        'HOST': 'db',  
+        'PORT': '5432',
+    }
 }
