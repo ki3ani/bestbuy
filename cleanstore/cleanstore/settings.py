@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+              
 
 load_dotenv()
 
@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['tintin-env.eba-mb2vwn6d.us-east-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['cleanstore-dev.us-west-1.elasticbeanstalk.com']
 
 
 # Application definition
@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'staples',
         'USER': 'ken',
         'PASSWORD': 'invincible',
-        'HOST': 'db', 
+        'HOST': 'db',  # This should match the service name in docker-compose.yml
         'PORT': '5432',
     }
 }
