@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['cleanstore-dev.us-west-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'rest_framework',
-    'store.apps.StoreConfig'
+    'store.apps.StoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'staples',
         'USER': 'ken',
         'PASSWORD': 'invincible',
-        'HOST': 'db',  # This should match the service name in docker-compose.yml
+        'HOST': 'localhost',  # This should match the service name in docker-compose.yml
         'PORT': '5432',
     }
 }
@@ -118,10 +118,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -179,8 +178,15 @@ EMAIL_HOST_PASSWORD = 'mypa leod wvfp piyx'
 EMAIL_USE_TLS = True
 
 
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# URL to access media files
+MEDIA_URL = '/media/'
+
+
+
+# Static files (CSS, JavaScript, images)
 STATIC_URL = '/static/'
+
+# Directory to collect static files into
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
-ACCOUNT_FORMS = {'signup': 'store.forms.CustomSignupForm'}
