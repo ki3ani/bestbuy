@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres
+    image: ki3ani/postgres:latest 
     environment:
       POSTGRES_DB: staples
       POSTGRES_USER: ken
@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   web:
-    build: .
+    image: ki3ani/cleanstore-web:latest  
     command: gunicorn cleanstore.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
@@ -19,12 +19,11 @@ services:
       - "8000:8000"
     environment:
       DJANGO_SETTINGS_MODULE: cleanstore.settings.production
-    
     depends_on:
       - db
 
   nginx:
-    image: nginx:latest
+    image: ki3ani/nginx:latest 
     ports:
       - "80:80"
     volumes:

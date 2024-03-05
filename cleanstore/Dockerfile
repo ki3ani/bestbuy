@@ -18,8 +18,15 @@ COPY . /app/
 # Expose the port the app runs on
 EXPOSE 8000
 
-# After copying your project and installing dependencies
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Command to run the application
+# Make sure the entrypoint.sh script is copied and made executable
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint script to run on container start
+ENTRYPOINT ["/entrypoint.sh"]
+
+# CMD is now used in conjunction with the entrypoint script, so adjust accordingly if needed
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cleanstore.wsgi:application"]
