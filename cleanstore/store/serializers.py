@@ -11,14 +11,13 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ['id', 'user', 'customer_number']
 
-
 class OrderSerializer(serializers.ModelSerializer):
-    item = serializers.SlugRelatedField(slug_field='name', queryset=Item.objects.all())
+    # Use PrimaryKeyRelatedField for the item field
+    item = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
     
     class Meta:
         model = Order
         fields = ['id', 'item', 'quantity', 'time']
-        # Note: 'customer' field is removed from here.
 
     def create(self, validated_data):
         # Assume that the request user's customer profile is set in the view.

@@ -12,6 +12,10 @@ python manage.py collectstatic --noinput --verbosity 2
 echo "Creating superuser..."
 python manage.py create_superuser
 
+#Run tests
+echo "Running tests..."
+python manage.py test
+
 # Start Gunicorn
 echo "Starting server..."
 exec gunicorn --bind 0.0.0.0:8000 cleanstore.wsgi:application

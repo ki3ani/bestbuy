@@ -1,10 +1,13 @@
 from django.shortcuts import redirect, render
+import phonenumbers
 from .forms import PhoneNumberForm
 from .permissions import IsAdminOrReadOnly
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from .models import Customer, Item, Order
 from .serializers import ItemSerializer, OrderSerializer
+from rest_framework.exceptions import ValidationError
+
 
 
 class HomeViewSet(viewsets.ViewSet):
@@ -53,26 +56,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-class OrderCreateView(generics.CreateAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(customer=self.request.user.customer)
-
-
 def add_phone_number(request):
     if request.method == 'POST':
         form = PhoneNumberForm(request.POST)
         if form.is_valid():
-            phone_number = form.cleaned_data['phone_number']
-            customer = Customer.objects.get(user=request.user)
-            customer.phone_number = phone_number
-            customer.save()
-            # Clear the session flag
-            if 'require_phone_number' in request.session:
-                del request.session['require_phone_number']
-            return redirect('home') 
+            raw_phone_number = form.cleaned_data['phone_number']
+            try:
+                parsed_phone_number = phonenumbers.parse(raw_phone_number, None)
+                if not phonenumbers.is_valid_number(parsed_phone_number):
+                    form.add_error('phone_number', 'This is not a valid phone number.')
+                else:
+                    phone_number = phonenumbers.format_number(parsed_phone_number, phonenumbers.PhoneNumberFormat.E164)
+                    customer = Customer.objects.get(user=request.user)
+                    customer.phone_number = phone_number
+                    customer.save()
+                    if 'require_phone_number' in request.session:
+                        del request.session['require_phone_number']
+                    return redirect('home')  # Assuming 'home' is the name of your home page's URL pattern
+            except phonenumbers.NumberParseException:
+                form.add_error('phone_number', 'This is not a valid phone number.')
     else:
         form = PhoneNumberForm()
     return render(request, 'add_phone_number.html', {'form': form})

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
+import phonenumbers
+
 class Item(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -15,7 +17,19 @@ class Item(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     customer_number = models.UUIDField(default=uuid.uuid4, editable=False)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)  # Add a phone number field
+    phone_number = models.CharField(max_length=20, blank=True, null=True)  # Adjusted max_length for international numbers
+
+    def save(self, *args, **kwargs):
+        if self.phone_number:
+            try:
+                parsed_phone = phonenumbers.parse(self.phone_number, None)
+                if not phonenumbers.is_valid_number(parsed_phone):
+                    raise ValueError("Invalid phone number format")
+                # Optionally format the number in international format before saving
+                self.phone_number = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.E164)
+            except phonenumbers.NumberParseException:
+                raise ValueError("Invalid phone number format")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username

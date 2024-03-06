@@ -1,5 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Phone Number</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+</head>
+<body>
+
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
+    <!-- Render other form fields from Django form -->
+    <div>
+        <label for="phone">Phone Number:</label>
+        <input id="phone" type="tel" name="phone_number" required> <!-- Make sure the name matches your form field -->
+    </div>
+
+    {{ form.non_field_errors }}
+    {{ form.phone_number.errors }} <!-- This will display any form errors for the phone number -->
+
+    <button type="submit">Save Phone Number</button>
 </form>
+
+<script>
+    // Initialize intl-tel-input
+    var phoneInputField = document.querySelector("#phone");
+    var phoneInput = intlTelInput(phoneInputField, {
+        preferredCountries: ['us', 'gb'], // You can set preferences
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // just for formatting/placeholders etc
+    });
+
+    // Optional: Adjust form submission to include full phone number with country code
+    var form = document.querySelector("form");
+    form.addEventListener("submit", function() {
+        var fullNumber = phoneInput.getNumber();
+        phoneInputField.value = fullNumber; // Replace the input value with the full number
+    });
+</script>
+
+</body>
+</html>
