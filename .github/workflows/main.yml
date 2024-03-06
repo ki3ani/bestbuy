@@ -20,17 +20,20 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cd cleanstore
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Set up Django test environment
       run: |
+        cd cleanstore
         export DJANGO_SETTINGS_MODULE=cleanstore.settings.test
         python manage.py migrate --noinput
         python manage.py collectstatic --noinput
 
     - name: Run tests
       run: |
+        cd cleanstore
         python manage.py test
 
   build-and-push-docker:
@@ -50,5 +53,6 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: cleanstore.settings.development
       run: |
+        cd cleanstore
         docker compose -f docker-compose.yml build web nginx
         docker compose -f docker-compose.yml push web nginx
