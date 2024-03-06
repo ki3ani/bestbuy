@@ -27,7 +27,7 @@ jobs:
     - name: Set up Django test environment
       run: |
         cd cleanstore
-        export DJANGO_SETTINGS_MODULE=cleanstore.settings.test
+        export DJANGO_SETTINGS_MODULE=cleanstore.settings.development
         python manage.py migrate --noinput
         python manage.py collectstatic --noinput
 
