@@ -1,4 +1,11 @@
 # Assignment Submission
 # Ordering System
 
-write up tomorrow
+### Technologies used
+- Django Rest Api
+- Postgres DB
+- Docker Compose
+- Dockerhub
+- GitHub CICD workflows
+- Africas Talking
+- Django All-auth
