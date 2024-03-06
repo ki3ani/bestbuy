@@ -14,3 +14,6 @@ DATABASES = {
         'PORT': '5432',  # Default PostgreSQL port
     }
 }
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
