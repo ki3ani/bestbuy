@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Install additional dependencies
+pip install phonenumbers
+
 # Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate --noinput
@@ -12,7 +15,7 @@ python manage.py collectstatic --noinput --verbosity 2
 echo "Creating superuser..."
 python manage.py create_superuser
 
-#Run tests
+# Run tests
 echo "Running tests..."
 python manage.py test
 

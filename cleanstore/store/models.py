@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
-
 import phonenumbers
 
 class Item(models.Model):
