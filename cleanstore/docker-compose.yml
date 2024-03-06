@@ -2,35 +2,46 @@ version: '3.8'
 
 services:
   db:
-    image: ki3ani/postgres:latest 
+    image: postgres:latest
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: staples
       POSTGRES_USER: ken
       POSTGRES_PASSWORD: invincible
+      DJANGO_SETTINGS_MODULE: cleanstore.settings.development
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   web:
-    image: ki3ani/cleanstore-web:latest  
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: gunicorn cleanstore.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     environment:
-      DJANGO_SETTINGS_MODULE: cleanstore.settings.production
+      DJANGO_SETTINGS_MODULE: cleanstore.settings.development
     depends_on:
       - db
 
   nginx:
-    image: ki3ani/nginx:latest 
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - /home/ki3ani/houseofninjas/cleanstore/staticfiles:/usr/share/nginx/html/static
+    environment:
+      DJANGO_SETTINGS_MODULE: cleanstore.settings.development
     depends_on:
       - web
 
+
+ 
 volumes:
   postgres_data:

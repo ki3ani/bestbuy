@@ -12,6 +12,7 @@ WORKDIR /app
 # Install dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install phonenumbers  # Add this line to install the 'phonenumbers' library
 
 # Copy the current directory contents into the container at /app
 COPY . /app/
