@@ -68,3 +68,4 @@ jobs:
         cd cleanstore
         docker compose -f docker-compose.yml build web nginx
         docker compose -f docker-compose.yml push web nginx
+##worksgood
