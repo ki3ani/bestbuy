@@ -9,7 +9,7 @@ DATABASES = {
         'NAME': 'staples',
         'USER': 'ken',
         'PASSWORD': 'invincible',
-        'HOST': 'db',  # This should match the service name in docker-compose.yml
+        'HOST': 'db',
         'PORT': '5432',
     }
 }

@@ -28,4 +28,4 @@ RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # CMD is now used in conjunction with the entrypoint script, so adjust accordingly if needed
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cleanstore.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "-w", "4", "cleanstore.wsgi:application"]

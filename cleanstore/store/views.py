@@ -6,7 +6,9 @@ from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from .models import Customer, Item, Order
 from .serializers import ItemSerializer, OrderSerializer
-from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import AnonymousUser
+from django.shortcuts import render, redirect
+
 
 
 
@@ -56,7 +58,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
+
 def add_phone_number(request):
+    user = request.user
+
     if request.method == 'POST':
         form = PhoneNumberForm(request.POST)
         if form.is_valid():
@@ -67,14 +72,25 @@ def add_phone_number(request):
                     form.add_error('phone_number', 'This is not a valid phone number.')
                 else:
                     phone_number = phonenumbers.format_number(parsed_phone_number, phonenumbers.PhoneNumberFormat.E164)
-                    customer = Customer.objects.get(user=request.user)
-                    customer.phone_number = phone_number
-                    customer.save()
-                    if 'require_phone_number' in request.session:
-                        del request.session['require_phone_number']
-                    return redirect('home')  # Assuming 'home' is the name of your home page's URL pattern
+
+                    if not isinstance(user, AnonymousUser):
+                        customer = Customer.objects.get(user=user)
+                        customer.phone_number = phone_number
+                        customer.save()
+
+                        if 'require_phone_number' in request.session:
+                            del request.session['require_phone_number']
+                        
+                        return redirect('home')  # Assuming 'home' is the name of your home page's URL pattern
+
             except phonenumbers.NumberParseException:
                 form.add_error('phone_number', 'This is not a valid phone number.')
     else:
         form = PhoneNumberForm()
+
+    # Check if the user already has a phone number
+    if not isinstance(user, AnonymousUser) and Customer.objects.filter(user=user, phone_number__isnull=False).exists():
+        # User has a phone number, redirect to home
+        return redirect('home')
+
     return render(request, 'add_phone_number.html', {'form': form})
