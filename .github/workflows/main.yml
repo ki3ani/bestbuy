@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - main
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    env:
+      AFRICAS_TALKING_API_KEY: ${{ secrets.AFRICAS_TALKING_API_KEY }}
+      AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -24,17 +25,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Set up Django test environment
+    - name: Set up Django test environment and run tests
       run: |
         cd cleanstore
         export DJANGO_SETTINGS_MODULE=cleanstore.settings.development
         python manage.py migrate --noinput
         python manage.py collectstatic --noinput
-
-    - name: Run tests
-      run: |
-        cd cleanstore
         python manage.py test
+
+
 
   build-and-push-docker:
     needs: test
