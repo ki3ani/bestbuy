@@ -9,8 +9,23 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      AFRICAS_TALKING_APIKEY: ${{ secrets.AFRICAS_TALKING_APIKEY }} 
+      AFRICAS_TALKING_APIKEY: ${{ secrets.AFRICAS_TALKING_APIKEY }}
       AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
+      DATABASE_HOST: localhost  # Add this line for GitHub Actions database operations
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_DB: staples
+          POSTGRES_USER: ken
+          POSTGRES_PASSWORD: invincible
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -21,6 +36,12 @@ jobs:
       run: |
         cd cleanstore
         pip install -r requirements.txt
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432; do
+          echo "Waiting for PostgreSQL to become ready..."
+          sleep 2
+        done
     - name: Run Django migrations
       run: |
         cd cleanstore
@@ -40,7 +61,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
     - name: Build and push Docker images using Docker Compose
       env:
         DJANGO_SETTINGS_MODULE: cleanstore.settings.development
