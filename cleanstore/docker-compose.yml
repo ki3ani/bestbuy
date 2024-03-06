@@ -9,7 +9,6 @@ services:
       POSTGRES_DB: staples
       POSTGRES_USER: ken
       POSTGRES_PASSWORD: invincible
-      DJANGO_SETTINGS_MODULE: cleanstore.settings.development
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -17,6 +16,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ki3ani/cleanstore-web:latest
     command: gunicorn cleanstore.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
@@ -31,6 +31,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ki3ani/nginx:latest
     ports:
       - "80:80"
     volumes:
@@ -41,7 +42,5 @@ services:
     depends_on:
       - web
 
-
- 
 volumes:
   postgres_data:
