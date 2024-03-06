@@ -25,7 +25,8 @@ sms = africastalking.SMS
 @receiver(post_save, sender=Order)
 def send_order_confirmation_sms(sender, instance, created, **kwargs):
     if created:
-        message = f"Hello, {instance.customer.user.username}. Your order for {instance.item.name} has been placed successfully."
+        item_name = instance.item.name  # Get the name of the ordered item
+        message = f"Hello, {instance.customer.user.username}. Your order for {item_name} has been received."
         phone_number = instance.customer.phone_number  # Ensure the phone number is correctly set in your Customer model
         try:
             response = sms.send(message, [phone_number])
