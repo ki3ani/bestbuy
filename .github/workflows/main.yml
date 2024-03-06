@@ -8,10 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      AFRICAS_TALKING_APIKEY: ${{ secrets.AFRICAS_TALKING_APIKEY }}
-      AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
-      DATABASE_HOST: localhost  # Add this line for GitHub Actions database operations
     services:
       db:
         image: postgres
@@ -26,6 +22,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+    env:
+      AFRICAS_TALKING_APIKEY: ${{ secrets.AFRICAS_TALKING_APIKEY }}
+      AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }} 
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
