@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      AFRICAS_TALKING_API_KEY: ${{ secrets.AFRICAS_TALKING_API_KEY }}
+      AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        cd cleanstore
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Set up Django test environment and run tests
+      run: |
+        cd cleanstore
+        export DJANGO_SETTINGS_MODULE=cleanstore.settings.development
+        python manage.py migrate --noinput
+        python manage.py collectstatic --noinput
+        python manage.py test
+
+
+
+  build-and-push-docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build and push Docker images using Docker Compose
+      env:
+        DJANGO_SETTINGS_MODULE: cleanstore.settings.development
+      run: |
+        cd cleanstore
+        docker compose -f docker-compose.yml build web nginx
+        docker compose -f docker-compose.yml push web nginx
