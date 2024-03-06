@@ -8,7 +8,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      AFRICAS_TALKING_API_KEY: ${{ secrets.AFRICAS_TALKING_API_KEY }}
+      AFRICAS_TALKING_API_KEY: ${{ secrets.AFRICAS_TALKING_APIKEY }}
       AFRICAS_TALKING_USERNAME: ${{ secrets.AFRICAS_TALKING_USERNAME }}
     steps:
     - name: Checkout code
