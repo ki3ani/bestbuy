@@ -10,7 +10,7 @@ python manage.py collectstatic --noinput --verbosity 2
 
 # Create superuser if not already exists
 echo "Creating superuser..."
-python manage.py create_superuser
+python manage.py createsuperuser
 
 # Start Gunicorn
 echo "Starting server..."
