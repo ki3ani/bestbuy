@@ -15,6 +15,14 @@ class Command(BaseCommand):
         email = os.getenv('DJANGO_SUPERUSER_EMAIL')
         password = os.getenv('DJANGO_SUPERUSER_PASSWORD')
 
+        # Print debugging information
+        print(f'Username: {username}')
+        print(f'Email: {email}')
+        print(f'Password: {password}')
+
+        if not username:
+            raise ValueError("The DJANGO_SUPERUSER_USERNAME environment variable is not set.")
+
         if not User.objects.filter(username=username).exists():
             User.objects.create_superuser(username, email, password)
             self.stdout.write(self.style.SUCCESS(f'Successfully created superuser {username}'))
