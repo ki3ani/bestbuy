@@ -1,6 +1,5 @@
 africastalking==1.2.7
 asgiref==3.7.2
-awsebcli
 blessed==1.20.0
 cement==2.8.2
 certifi==2024.2.2
