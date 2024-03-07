@@ -42,4 +42,3 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.quantity} x {self.item.name} by {self.customer.user.username}"
 
-# tapo 
