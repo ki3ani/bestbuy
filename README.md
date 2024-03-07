@@ -61,6 +61,89 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 2. **Authentication:**
    - Users must sign in or register to make an order.
    - Customer registration is required for placing orders.
+  
+      ### Registration and Login
+
+   **User Registration**
+
+   - To register a new account, users can visit the signup page.
+   - The registration form includes fields for email, password, and phone number.
+
+   **Endpoint:** [https://bestbuy-bqey.onrender.com/accounts/signup/](https://bestbuy-bqey.onrender.com/accounts/signup/)
+
+   **Method:** POST
+
+   **Request:**
+   - Headers:
+     - Content-Type: application/json
+     - CSRF-Token: `<your_csrf_token>` <!-- Placeholder for CSRF token -->
+   - Body:
+     ```json
+     {
+         "email": "user@example.com",
+         "password1": "your_password",
+         "password2": "your_password",
+         "phone_number": "your_phone_number" <!-- Placeholder for phone number -->
+     }
+     ```
+
+   **Response:**
+   - Successful Registration:
+     ```json
+     {
+         "message": "Registration successful. Please check your email for verification."
+     }
+     ```
+   - Failed Registration:
+     ```json
+     {
+         "error": "Registration failed. Please check your input and try again."
+     }
+     ```
+
+   **User Login**
+
+   - To log in, users can visit the login page.
+   - The login form includes fields for email and password.
+
+   **Endpoint:** [https://bestbuy-bqey.onrender.com/accounts/login/](https://bestbuy-bqey.onrender.com/accounts/login/)
+
+   **Method:** POST
+
+   **Request:**
+   - Headers:
+     - Content-Type: application/json
+     - CSRF-Token: `<your_csrf_token>` <!-- Placeholder for CSRF token -->
+   - Body:
+     ```json
+     {
+         "email": "user@example.com",
+         "password": "your_password"
+     }
+     ```
+
+   **Response:**
+   - Successful Login:
+     ```json
+     {
+         "message": "Login successful. Welcome back, user!"
+     }
+     ```
+   - Failed Login:
+     ```json
+     {
+         "error": "Login failed. Please check your credentials and try again."
+     }
+     ```
+
+   **Third-Party Authentication**
+
+   - Users can also register or log in using third-party services like Google.
+
+   ### Images and Screenshots
+   <!-- Placeholder for images/screenshots of the registration/login process -->
+
+
 
 3. **Order Placement:**
    - After signing in, customers can browse items and place orders.
@@ -68,6 +151,8 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 4. **Order Confirmation:**
    - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
+  
+
 
 5. **Admin Privileges:**
    - Only administrators can create items for sale.
