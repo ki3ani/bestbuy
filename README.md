@@ -216,7 +216,37 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 4. **Order Confirmation:**
    - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
-   - ![Message](/cleanstore/pics/messo.jpeg) 
+   - ![Message](/cleanstore/pics/messo.jpeg)
+  
+   ### Continuous Integration (CI)
+
+This project uses GitHub Actions for Continuous Integration. The CI workflow consists of two jobs: `test` and `build-and-push-docker`. Here's an explanation of each job:
+
+#### Job: `test`
+
+- **Trigger:** This job runs on every push to the `main` branch.
+- **Environment Setup:**
+  - It runs on an `ubuntu-latest` machine.
+  - Configures a PostgreSQL service container with specified environment variables and health check options.
+  - Sets environment variables required for the Django application (e.g., Africa's Talking API key, username, and database host).
+- **Steps:**
+  - Checks out the repository.
+  - Sets up Python 3.10.
+  - Installs Python dependencies listed in `requirements.txt`.
+  - Waits for the PostgreSQL service to be ready using a loop with `pg_isready`.
+  - Applies Django migrations.
+  - Runs Django tests using `python manage.py test`.
+
+#### Job: `build-and-push-docker`
+
+- **Dependencies:** This job depends on the successful completion of the `test` job.
+- **Trigger:** It also runs on every push to the `main` branch.
+- **Steps:**
+  - Checks out the repository.
+  - Logs in to Docker Hub using credentials from secrets.
+  - Builds and pushes Docker images (`web` and `nginx`) using Docker Compose. The environment variable `DJANGO_SETTINGS_MODULE` is set to specify the development settings for Django.
+
+This workflow ensures that tests pass and, if successful, builds and pushes Docker images to Docker Hub. The separation of `test` and `build-and-push-docker` allows for controlled and efficient CI/CD.
   
 
 
