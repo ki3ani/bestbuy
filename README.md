@@ -146,9 +146,9 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 3. **Order Placement:**
    - After signing in, customers can browse items and place orders.
-   - Placed orders are visible on the customer's dashboard.
+     
   
-      **Order Placement and Customer Dashboard**
+      **Order Placement**
 
    **Place Order**
 
