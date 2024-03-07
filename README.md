@@ -1,7 +1,7 @@
 # Best Buy
 
 ## Introduction
-This project, a technical challenge by Savannah Informatics, is a Django API designed to manage orders, interact with a PostgreSQL database, and integrate with Africa's Talking for sending order confirmation messages to customers. The authentication system is powered by Django Allauth, and the entire application is containerized using Docker Compose. The deployment workflow includes CI/CD through a configured pipeline, with the final deployment hosted on Render.
+This project, a technical challenge by Savannah Informatics, is a Django DRF  API designed to manage orders, interact with a PostgreSQL database, and integrate with Africa's Talking for sending order confirmation messages to customers. The authentication system is powered by Django Allauth, and the entire application is containerized using Docker Compose. The deployment workflow includes CI/CD through a configured pipeline, with the final deployment hosted on Render.
 
 ## Objectives
 1. **Order Management:** Create a Django API for efficient order management, ensuring seamless interactions with the PostgreSQL database.
