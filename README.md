@@ -140,8 +140,7 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
    - Users can also register or log in using third-party services like Google.
 
-   ### Images and Screenshots
-   <!-- Placeholder for images/screenshots of the registration/login process -->
+  - ![Google Login](/cleanstore/pics/google.png)
 
 
 
@@ -217,6 +216,7 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 4. **Order Confirmation:**
    - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
+   - ![Message](/cleanstore/pics/messo.jpeg) 
   
 
 
