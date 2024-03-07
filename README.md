@@ -18,7 +18,7 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 ## Functional Requirements
 1. **Home Page:**
-   - Upon logging in, users are redirected to the home page.
+   - Upon visiting the page, users are redirected to the home page.
    - The home page displays all items available for sale.
 
 2. **Authentication:**
