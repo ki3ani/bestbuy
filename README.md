@@ -148,6 +148,72 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 3. **Order Placement:**
    - After signing in, customers can browse items and place orders.
    - Placed orders are visible on the customer's dashboard.
+  
+      **Order Placement and Customer Dashboard**
+
+   **Place Order**
+
+   - Authenticated users can place orders for items.
+   - The order placement form includes the item details and quantity.
+
+   **Endpoint:** [https://bestbuy-bqey.onrender.com/orders/](https://bestbuy-bqey.onrender.com/orders/)
+
+   **Method:** POST
+
+   **Request:**
+   - Headers:
+     - Authorization: Bearer `<your_access_token>` <!-- Placeholder for access token -->
+     - Content-Type: application/json
+     - CSRF-Token: `<your_csrf_token>` <!-- Placeholder for CSRF token -->
+   - Body:
+     ```json
+     {
+         "item_id": 1,
+         "quantity": 2
+     }
+     ```
+
+   **Response:**
+   - Successful Order Placement:
+     ```json
+     {
+         "message": "Order placed successfully. Confirmation sent via text message."
+     }
+     ```
+   - Failed Order Placement:
+     ```json
+     {
+         "error": "Order placement failed. Please check your input and try again."
+     }
+     ```
+
+   **View Orders**
+
+   - Authenticated users can view a list of their placed orders.
+
+   **Endpoint:** [https://bestbuy-bqey.onrender.com/orders/](https://bestbuy-bqey.onrender.com/orders/)
+
+   **Method:** GET
+
+   **Response:**
+   ```json
+   [
+       {
+           "order_id": 1,
+           "item_name": "Iphone 15",
+           "quantity": 2,
+           "total_price": "2700.00",
+           "status": "Processing"
+       },
+       {
+           "order_id": 2,
+           "item_name": "Pizza",
+           "quantity": 1,
+           "total_price": "5.00",
+           "status": "Delivered"
+       }
+   ]
+
 
 4. **Order Confirmation:**
    - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
