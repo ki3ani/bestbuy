@@ -16,43 +16,24 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 
 6. **Render Deployment:** Deploy the application on Render, taking advantage of its scalable infrastructure and ease of use.
 
-## Project Structure
-- **`/app`:** Contains the Django application code.
-- **`/docker-compose.yml`:** Docker Compose configuration file for containerization.
-- **`.github/workflows`:** CI/CD workflows for automated testing and deployment.
+## Functional Requirements
+1. **Home Page:**
+   - Upon logging in, users are redirected to the home page.
+   - The home page displays all items available for sale.
 
-## Getting Started
-To run the application locally or deploy it on Render, follow the steps outlined in the [**Installation Guide**](#installation-guide) below.
+2. **Authentication:**
+   - Users must sign in or register to make an order.
+   - Customer registration is required for placing orders.
 
-## Installation Guide
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/<your-username>/<your-repo>.git
-    ```
+3. **Order Placement:**
+   - After signing in, customers can browse items and place orders.
+   - Placed orders are visible on the customer's dashboard.
 
-2. Navigate to the project directory:
-    ```bash
-    cd <your-repo>
-    ```
+4. **Order Confirmation:**
+   - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
 
-3. Copy the example environment variables file and customize it:
-    ```bash
-    cp .env.example .env
-    ```
+5. **Admin Privileges:**
+   - Only administrators can create items for sale.
+   - Admins have exclusive rights to manage and add new items.
 
-4. Modify the `.env` file with your API keys, database configurations, and other necessary settings.
 
-5. Build and run the Docker containers:
-    ```bash
-    docker-compose up --build
-    ```
-
-6. Access the Django API at `http://localhost:8000` in your web browser.
-
-## CI/CD Workflow
-The project is configured with a CI/CD workflow using GitHub Actions. On each push to the main branch, the workflow will trigger automated testing and deployment to Render. View the workflow details in the [**Actions tab**](../../actions) of the repository.
-
-## Django API Views and URL Patterns
-### `urls.py`
-```python
-<Replace with your urls.py code>
