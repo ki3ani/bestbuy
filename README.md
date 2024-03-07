@@ -21,6 +21,43 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
    - Upon visiting the page, users are redirected to the home page.
    - The home page displays all items available for sale.
 
+     ### Home Page - View Items for Sale
+
+     **Endpoint:** [https://bestbuy-bqey.onrender.com/](https://bestbuy-bqey.onrender.com/)
+
+     **Method:** GET
+
+     **Description:**
+     - This endpoint represents the home page of the application where users can view items available for sale.
+     - When users visit this endpoint, they receive a list of items along with their details.
+
+     **Sample Response:**
+     ```json
+     [
+         {
+             "id": 1,
+             "name": "Iphone 15",
+             "price": "1350.00",
+             "description": "a nice iPhone for school",
+             "in_stock": true
+         },
+         {
+             "id": 2,
+             "name": "Pizza",
+             "price": "5.00",
+             "description": "Hawaiian",
+             "in_stock": true
+         },
+         {
+             "id": 3,
+             "name": "Sedan",
+             "price": "45000.00",
+             "description": "a gently used sedan",
+             "in_stock": true
+         }
+     ]
+     ```
+
 2. **Authentication:**
    - Users must sign in or register to make an order.
    - Customer registration is required for placing orders.
@@ -35,5 +72,3 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
 5. **Admin Privileges:**
    - Only administrators can create items for sale.
    - Admins have exclusive rights to manage and add new items.
-
-
