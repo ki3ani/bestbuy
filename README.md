@@ -218,6 +218,11 @@ This project, a technical challenge by Savannah Informatics, is a Django API des
    - Upon order placement, an order confirmation is sent via text (using Africa's Talking) to the customer.
    - ![Message](/cleanstore/pics/messo.jpeg)
   
+5. **Admin Privileges:**
+   - Only administrators can create items for sale.
+   - Admins have exclusive rights to manage and add new items.
+
+  
    ### Continuous Integration (CI)
 
 This project uses GitHub Actions for Continuous Integration. The CI workflow consists of two jobs: `test` and `build-and-push-docker`. Here's an explanation of each job:
@@ -249,7 +254,3 @@ This project uses GitHub Actions for Continuous Integration. The CI workflow con
 This workflow ensures that tests pass and, if successful, builds and pushes Docker images to Docker Hub. The separation of `test` and `build-and-push-docker` allows for controlled and efficient CI/CD.
   
 
-
-5. **Admin Privileges:**
-   - Only administrators can create items for sale.
-   - Admins have exclusive rights to manage and add new items.
