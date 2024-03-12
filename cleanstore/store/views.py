@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 import phonenumbers
 from .forms import PhoneNumberForm
 from .permissions import IsAdminOrReadOnly
@@ -96,7 +96,6 @@ def add_phone_number(request):
     return render(request, 'add_phone_number.html', {'form': form})
 
 
-
 class ProfileViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only
 
@@ -106,6 +105,12 @@ class ProfileViewSet(viewsets.ViewSet):
             customer = Customer.objects.get(user=user)
             return Response({"phone_number": customer.phone_number})
         return Response({"phone_number": None})
+
+    def retrieve(self, request, pk=None):
+        if not isinstance(request.user, AnonymousUser):
+            customer = get_object_or_404(Customer, pk=pk, user=request.user)
+            return Response({"phone_number": customer.phone_number})
+        return Response({"error": "User not authenticated"}, status=status.HTTP_404_NOT_FOUND)
     
     def update(self, request, pk=None):
         user = request.user
