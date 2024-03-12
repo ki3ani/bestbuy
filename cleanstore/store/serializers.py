@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Item, Order
+from .models import Customer, Item, Order, userProfile
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,9 @@ class OrderSerializer(serializers.ModelSerializer):
         customer = Customer.objects.get(user=request.user)
         validated_data['customer'] = customer
         return super().create(validated_data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = userProfile
+        fields = ['id', 'user', 'phone_number']

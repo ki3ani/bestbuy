@@ -94,3 +94,32 @@ def add_phone_number(request):
         return redirect('home')
 
     return render(request, 'add_phone_number.html', {'form': form})
+
+
+
+class ProfileViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only
+
+    def list(self, request):
+        user = request.user
+        if not isinstance(user, AnonymousUser):
+            customer = Customer.objects.get(user=user)
+            return Response({"phone_number": customer.phone_number})
+        return Response({"phone_number": None})
+    
+    def update(self, request, pk=None):
+        user = request.user
+        if not isinstance(user, AnonymousUser):
+            customer = Customer.objects.get(user=user)
+            phone_number = request.data.get('phone_number')
+            if phone_number:
+                try:
+                    parsed_phone = phonenumbers.parse(phone_number, None)
+                    if not phonenumbers.is_valid_number(parsed_phone):
+                        return Response({"error": "Invalid phone number format"}, status=status.HTTP_400_BAD_REQUEST)
+                    customer.phone_number = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.E164)
+                    customer.save()
+                    return Response({"phone_number": customer.phone_number})
+                except phonenumbers.NumberParseException:
+                    return Response({"error": "Invalid phone number format"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"phone_number": None})

@@ -153,4 +153,3 @@ def test_add_phone_number(self):
     customer = Customer.objects.get(user=user)
     self.assertIsNotNone(customer.phone_number)
     self.assertEqual(customer.phone_number, '+254701872345')
-
