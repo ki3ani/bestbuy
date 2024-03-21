@@ -40,7 +40,10 @@ class Order(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.quantity} x {self.item.name} by {self.customer.user.username}"
+        item_name = self.item.name if self.item else 'No item'
+        customer_username = self.customer.user.username if self.customer.user else 'No customer'
+        return f"{self.quantity} x {item_name} by {customer_username}"
+
 
 
 
@@ -48,7 +51,7 @@ class userProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)  # Adjusted max_length for international numbers
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.phone_number:

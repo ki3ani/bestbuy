@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Customer, Item, Order, userProfile
+import pytz 
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,17 +12,24 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ['id', 'user', 'customer_number']
 
+
+
 class OrderSerializer(serializers.ModelSerializer):
-    # Use PrimaryKeyRelatedField for the item field
     item = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
-    
+    formatted_time = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
-        fields = ['id', 'item', 'quantity', 'time']
+        fields = ['id', 'item', 'quantity', 'time', 'formatted_time']
+        read_only_fields = ['time', 'formatted_time']
+
+    def get_formatted_time(self, obj):
+        # Convert to Nairobi timezone before formatting
+        nairobi_timezone = pytz.timezone('Africa/Nairobi')
+        local_time = obj.time.astimezone(nairobi_timezone)
+        return local_time.strftime('%Y-%m-%d %H:%M:%S')
 
     def create(self, validated_data):
-        # Assume that the request user's customer profile is set in the view.
-        # You can access the request in the serializer context as self.context['request'].
         request = self.context['request']
         customer = Customer.objects.get(user=request.user)
         validated_data['customer'] = customer

@@ -14,6 +14,6 @@ urlpatterns = [
     path('items/', ItemViewSet.as_view({'get': 'list', 'post': 'create'}), name='item-list-create'),
     path('', include(router.urls)),  # Includes all registered routes
     path('add_phone_number/', add_phone_number, name='add_phone_number'),
-    path('user_profile/', ProfileViewSet.as_view({'get': 'retrieve', 'put': 'update'}), name='user_profile'),
+    path('profile/', ProfileViewSet.as_view({'get': 'retrieve', 'put': 'update'}), name='profile'),
 
 ]

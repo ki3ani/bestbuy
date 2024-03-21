@@ -191,3 +191,8 @@ STATIC_URL = '/static/'
 
 # Directory to collect static files into
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+TIME_ZONE = 'Africa/Nairobi'
+USE_TZ = True
