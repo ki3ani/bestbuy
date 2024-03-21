@@ -4,35 +4,48 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from allauth.account.signals import user_logged_in
-from django.shortcuts import redirect
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import Customer, Order
 from dotenv import load_dotenv
+import logging
+from django.shortcuts import redirect
+
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-# Fetch API key and username from environment variables
+# Environment Variables Check
 api_key = os.getenv('AFRICAS_TALKING_APIKEY')
 username = os.getenv('AFRICAS_TALKING_USERNAME')
 
-if api_key is None or username is None:
-    raise ValueError("Africa's Talking API key or username is not set in the environment variables.")
-
-# Initialize Africa's Talking SDK
-africastalking.initialize(username=username, api_key=api_key)
-sms = africastalking.SMS
+if not api_key or not username:
+    logger.critical("Africa's Talking API key or username is missing in the environment variables.")
+else:
+    # Initialize Africa's Talking SDK
+    africastalking.initialize(username=username, api_key=api_key)
+    sms = africastalking.SMS
 
 @receiver(post_save, sender=Order)
 def send_order_confirmation_sms(sender, instance, created, **kwargs):
-    if created:
-        item_name = instance.item.name  # Get the name of the ordered item
+    if created and api_key and username:
+        item_name = instance.item.name
         message = f"Hello, {instance.customer.user.username}. Your order for {item_name} has been received."
-        phone_number = instance.customer.phone_number  # Ensure the phone number is correctly set in your Customer model
+        phone_number = instance.customer.phone_number
         try:
             response = sms.send(message, [phone_number])
-            print(response)
+            logger.info(f"SMS sent successfully: {response}")
         except Exception as e:
-            print(f"SMS sending failed: {e}")
+            logger.error(f"SMS sending failed for order {instance.id}: {e}")
+
+@receiver(post_save, sender=Order)
+def send_email_notification_to_admin(sender, instance, created, **kwargs):
+    if created:
+        admin_email = os.getenv('ADMIN_EMAIL_ADDRESS', 'admin@example.com')
+        subject = 'New Order Notification'
+        message = f'New order #{instance.id} has been placed by {instance.customer.user.username}.'
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [admin_email])
 
 @receiver(post_save, sender=User)
 def create_or_update_user_customer(sender, instance, created, **kwargs):
@@ -47,10 +60,9 @@ def user_logged_in_callback(sender, request, user, **kwargs):
     try:
         customer = user.customer
         if not customer.phone_number:
-            # If the phone number is not present, redirect to the phone number form
-            # Use a session variable or a flag to indicate the need for a phone number
+            # If the phone number is not present, set a session variable
+            # to indicate the need for a phone number
             request.session['require_phone_number'] = True
-            return redirect('add_phone_number') 
     except Customer.DoesNotExist:
         # Handle cases where the user does not have a related Customer object
         pass

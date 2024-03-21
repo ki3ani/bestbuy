@@ -8,18 +8,37 @@ from .models import Customer, Item, Order
 from .serializers import ItemSerializer, OrderSerializer
 from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render, redirect
-
-
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
 
 
 class HomeViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.AllowAny]  # Allow access to all users
+    permission_classes = [permissions.AllowAny]
 
     def list(self, request):
-        # Query items to display on the home page
-        items = Item.objects.filter(in_stock=True)
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            # Check if the user has a phone number
+            if not request.user.customer.phone_number:
+                # If the phone number is not present, set a session variable
+                # to indicate the need for a phone number
+                request.session['require_phone_number'] = True
+                return redirect('add_phone_number')  # Redirect to the phone number addition page
+            
+            # Proceed with the normal flow of the view
+            items = Item.objects.filter(in_stock=True)
+            serializer = ItemSerializer(items, many=True)
+            response_data = {
+                "message": "Browse and make your orders!",
+                "items": serializer.data
+            }
+            return Response(response_data)
+        else:
+            # Return the message for unauthenticated users
+            message = "You can view items, but you'll need to sign up or register to start making orders."
+            response_data = {"message": message}
+            return Response(response_data)
 
 class DashboardViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only
@@ -32,10 +51,19 @@ class DashboardViewSet(viewsets.ViewSet):
 
  
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['name', 'in_stock', 'category__name']  # Now you can filter by category name too
+    search_fields = ['name', 'description', 'category__name']
+    pagination_class = StandardResultsSetPagination
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -43,10 +71,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Ensure user is authenticated
 
     def get_queryset(self):
-        """
-        This view should return a list of all the orders
-        for the currently authenticated user.
-        """
         user = self.request.user
         return Order.objects.filter(customer=user.customer)
 
@@ -97,21 +121,35 @@ def add_phone_number(request):
 
 
 class ProfileViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
         user = request.user
         if not isinstance(user, AnonymousUser):
             customer = Customer.objects.get(user=user)
-            return Response({"phone_number": customer.phone_number})
+            # Check if the user has a phone number
+            if not customer.phone_number:
+                # If the phone number is not present, set a session variable
+                # to indicate the need for a phone number
+                request.session['require_phone_number'] = True
+                return redirect('add_phone_number')  # Redirect to the phone number addition page
+            else:
+                return Response({"phone_number": customer.phone_number})
         return Response({"phone_number": None})
 
     def retrieve(self, request, pk=None):
         if not isinstance(request.user, AnonymousUser):
             customer = get_object_or_404(Customer, pk=pk, user=request.user)
-            return Response({"phone_number": customer.phone_number})
+            # Check if the user has a phone number
+            if not customer.phone_number:
+                # If the phone number is not present, set a session variable
+                # to indicate the need for a phone number
+                request.session['require_phone_number'] = True
+                return redirect('add_phone_number')  # Redirect to the phone number addition page
+            else:
+                return Response({"phone_number": customer.phone_number})
         return Response({"error": "User not authenticated"}, status=status.HTTP_404_NOT_FOUND)
-    
+
     def update(self, request, pk=None):
         user = request.user
         if not isinstance(user, AnonymousUser):

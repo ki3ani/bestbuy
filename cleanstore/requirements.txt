@@ -14,6 +14,7 @@ defusedxml==0.7.1
 dj-database-url==2.1.0
 Django==5.0.2
 django-allauth==0.61.1
+django-filter==24.1
 django-storages==1.14.2
 djangorestframework==3.14.0
 docker==7.0.0
