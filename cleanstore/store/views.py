@@ -13,32 +13,36 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 
 
+
 class HomeViewSet(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
 
     def list(self, request):
-        # Check if the user is authenticated
         if request.user.is_authenticated:
-            # Check if the user has a phone number
             if not request.user.customer.phone_number:
-                # If the phone number is not present, set a session variable
-                # to indicate the need for a phone number
                 request.session['require_phone_number'] = True
-                return redirect('add_phone_number')  # Redirect to the phone number addition page
-            
-            # Proceed with the normal flow of the view
+                return redirect('add_phone_number')
+
             items = Item.objects.filter(in_stock=True)
-            serializer = ItemSerializer(items, many=True)
-            response_data = {
-                "message": "Browse and make your orders!",
-                "items": serializer.data
-            }
-            return Response(response_data)
+            if not items.exists():
+                return redirect('no_items')  
+            else:
+                serializer = ItemSerializer(items, many=True)
+                response_data = {
+                    "message": "Browse and make your orders!",
+                    "items": serializer.data
+                }
+                return Response(response_data)
         else:
-            # Return the message for unauthenticated users
             message = "You can view items, but you'll need to sign up or register to start making orders."
             response_data = {"message": message}
             return Response(response_data)
+        
+
+def no_items_page(request):
+    return render(request, 'no_items.html')
+
+
 
 class DashboardViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Allow access to authenticated users only

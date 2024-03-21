@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import HomeViewSet, DashboardViewSet, ItemViewSet, OrderViewSet, add_phone_number, ProfileViewSet
+from . import views
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
@@ -15,5 +16,7 @@ urlpatterns = [
     path('', include(router.urls)),  # Includes all registered routes
     path('add_phone_number/', add_phone_number, name='add_phone_number'),
     path('profile/', ProfileViewSet.as_view({'get': 'retrieve', 'put': 'update'}), name='profile'),
+    path('no-items/', views.no_items_page, name='no_items_page'),
+
 
 ]
