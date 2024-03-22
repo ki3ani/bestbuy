@@ -27,17 +27,29 @@ else:
     africastalking.initialize(username=username, api_key=api_key)
     sms = africastalking.SMS
 
+from django.utils.timezone import localtime
+
 @receiver(post_save, sender=Order)
 def send_order_confirmation_sms(sender, instance, created, **kwargs):
     if created and api_key and username:
+        customer_username = instance.customer.user.username
         item_name = instance.item.name
-        message = f"Hello, {instance.customer.user.username}. Your order for {item_name} has been received."
+        order_id = instance.id
+        order_date = localtime(instance.date_created).strftime('%Y-%m-%d %H:%M:%S')  # Assuming `date_created` is a datetime field in your Order model
+        total_cost = instance.item.price * instance.quantity if instance.item else 0
         phone_number = instance.customer.phone_number
+
+        # Enhanced message with order details
+        message = (f"Hello, {customer_username}! Your order #{order_id} for {item_name} has been successfully received "
+                   f"as of {order_date}. Total Cost: {total_cost}. "
+                   "We are processing it and will update you with the shipping details soon. Thank you for shopping with us!")
+
         try:
             response = sms.send(message, [phone_number])
-            logger.info(f"SMS sent successfully: {response}")
+            logger.info(f"Order #{order_id} confirmation SMS sent successfully to {phone_number} (User: {customer_username}). API Response: {response}")
         except Exception as e:
-            logger.error(f"SMS sending failed for order {instance.id}: {e}")
+            logger.error(f"Failed to send order #{order_id} confirmation SMS to {phone_number} (User: {customer_username}): {e}", exc_info=True)
+
 
 @receiver(post_save, sender=Order)
 def send_email_notification_to_admin(sender, instance, created, **kwargs):
@@ -46,6 +58,7 @@ def send_email_notification_to_admin(sender, instance, created, **kwargs):
         subject = 'New Order Notification'
         message = f'New order #{instance.id} has been placed by {instance.customer.user.username}.'
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [admin_email])
+
 
 @receiver(post_save, sender=User)
 def create_or_update_user_customer(sender, instance, created, **kwargs):

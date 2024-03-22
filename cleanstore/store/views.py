@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
+from decimal import Decimal
 
 
 

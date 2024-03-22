@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 import phonenumbers
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -50,6 +51,7 @@ class Order(models.Model):
     item = models.ForeignKey(Item, related_name='orders', on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField(default=1)
     time = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         item_name = self.item.name if self.item else 'No item'
