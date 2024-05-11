@@ -218,3 +218,7 @@ AWS_LOCATION = 'media'
 # Media files (User uploaded content)
 DEFAULT_FILE_STORAGE = 'cleanstore.storagebackend.MediaStorage'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'  
+
+
+#coz i get a thousand hugs from ten thousand lightning bugs as they try to teach me how to dance
+# A list of all the settings that you can override in your settings file can be found here: https://docs.djangoproject.com/en/3.1/ref/settings/
